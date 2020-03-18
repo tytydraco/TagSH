@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TagSH</string>
+    <string name="flash">Flash To Tag</string>
+    <string name="empty_text">Scan an TagSH NFC tag to execute it.</string>
+</resources>
