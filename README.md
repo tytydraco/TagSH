@@ -14,5 +14,5 @@ Originally I made this app for running benchmarking commands. It can be a hassle
 - Can work without root (permissions are limited of course)
 
 # Contact
-Telegram: @tytydraco
-Email: tylernij@gmail.com
+- Telegram: @tytydraco
+- Email: tylernij@gmail.com
