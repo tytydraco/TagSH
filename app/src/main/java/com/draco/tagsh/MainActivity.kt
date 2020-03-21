@@ -100,12 +100,18 @@ class MainActivity : AppCompatActivity() {
                     val currentText = outputView.text.toString()
                     val newText = currentText + it + "\n"
 
+                    val shouldScrollDown = !scrollView.canScrollVertically(1)
+
                     /* Update output text */
                     outputView.text = newText
 
                     /* Scroll to bottom of text */
-                    scrollView.post {
-                        scrollView.fullScroll(View.FOCUS_DOWN)
+                    if (shouldScrollDown) {
+                        scrollView.post {
+                            outputView.setTextIsSelectable(false)
+                            scrollView.fullScroll(ScrollView.FOCUS_DOWN)
+                            outputView.setTextIsSelectable(true)
+                        }
                     }
                 }
             }

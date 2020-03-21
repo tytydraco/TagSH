@@ -16,6 +16,7 @@
         android:fontFamily="monospace"
         android:textColor="@color/colorText"
         android:text="@string/empty_text"
-        android:padding="12dp"/>
+        android:padding="12dp"
+        android:textIsSelectable="true" />
 
 </ScrollView>
