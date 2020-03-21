@@ -13,6 +13,13 @@ Originally I made this app for running benchmarking commands. It can be a hassle
 - Script is stored directly on the tag, so it's universal
 - Can work without root (permissions are limited of course)
 
+# Tips
+1. Make sure to use LF (UNIX) style line endings. Using the Windows default line ending style will break the script.
+2. `#!/system/bin/sh` is optional. It may take up space on your NFC tag, and it is safe to remove.
+3. Use `[ $(id -u) -eq 0 ] || su -c sh "$0" "$@"` to elevate your script to root permissions.
+4. Use `input keyevent KEYCODE_HOME` or `input keyevent 3` to make your script exit TagSH on completion (elevated permissions required).
+5. Clean up your code. Remove any unnecessary comments or extraneous code to make it small enough to fit on an NFC tag.
+
 # Contact
 - Telegram: @tytydraco
 - Email: tylernij@gmail.com
