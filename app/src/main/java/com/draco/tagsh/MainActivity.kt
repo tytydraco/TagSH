@@ -6,13 +6,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import java.lang.Exception
 import java.util.concurrent.atomic.AtomicBoolean
 
 class MainActivity : AppCompatActivity() {
@@ -22,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     /* Internal variables */
     private lateinit var tagScriptPath: String
     private val tagScriptName = "script.sh"
+    private val requestCodeSelectScript = 1
     private var pendingScriptBytes = byteArrayOf()
     private var currentlyExecuting = AtomicBoolean()
 
@@ -68,7 +67,7 @@ class MainActivity : AppCompatActivity() {
             .setType("*/*")
             .setAction(Intent.ACTION_GET_CONTENT)
         val chooserIntent = Intent.createChooser(intent, "Select script")
-        startActivityForResult(chooserIntent, FLASH_SCRIPT_REQUEST_CODE)
+        startActivityForResult(chooserIntent, requestCodeSelectScript)
     }
 
     /* Execute whatever script is on NFC tag */
@@ -174,7 +173,7 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == FLASH_SCRIPT_REQUEST_CODE && resultCode == RESULT_OK)
+        if (requestCode == requestCodeSelectScript && resultCode == RESULT_OK)
             if (data != null)
                 loadScriptFromStorage(data.data!!)
     }
