@@ -52,14 +52,14 @@ class MainActivity : AppCompatActivity() {
             return
 
         /* Read contents of script */
-        try {
-            val inputStream = contentResolver.openInputStream(uri)
-            pendingScriptBytes = inputStream!!.readBytes()
-            inputStream.close()
-            readyToFlashDialog.show()
-        } catch (_: Exception) {
-            Toast.makeText(this, "Script cannot be read.", Toast.LENGTH_SHORT).show()
+        val inputStream = contentResolver.openInputStream(uri)
+        if (inputStream == null) {
+            Toast.makeText(this, "Could not read script.", Toast.LENGTH_SHORT).show()
+            return
         }
+        pendingScriptBytes = inputStream.readBytes()
+        inputStream.close()
+        readyToFlashDialog.show()
     }
 
     /* Select script from storage */
