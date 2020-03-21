@@ -124,15 +124,6 @@ class MainActivity : AppCompatActivity() {
         }.start()
     }
 
-    /* Warn the user that NFC is either disabled or unsupported */
-    private fun warnNfcDisabled() {
-        AlertDialog.Builder(this)
-            .setTitle("NFC Disabled")
-            .setMessage("NFC is either disabled or unsupported on this device. Make sure you enable NFC to use this app.")
-            .setPositiveButton("Okay", null)
-            .show()
-    }
-
     /* On activity creation */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -159,9 +150,13 @@ class MainActivity : AppCompatActivity() {
         /* Allow Nfc tags to be scanned while the app is opened */
         nfc.setupForegroundIntent(this)
 
-        /* Make sure NFC is enabled */
+        /* Warn the user that NFC is either disabled or unsupported */
         if (nfc.supportState() != Nfc.State.SUPPORTED_ON)
-            warnNfcDisabled()
+            AlertDialog.Builder(this)
+                .setTitle("NFC Disabled")
+                .setMessage("NFC is either disabled or unsupported on this device. Make sure you enable NFC to use TagSH.")
+                .setPositiveButton("Okay", null)
+                .show()
 
         /* Check if we opened the app due to a Nfc event */
         executeScriptFromTag(intent)
