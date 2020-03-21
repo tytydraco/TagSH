@@ -17,15 +17,15 @@ class MainActivity : AppCompatActivity() {
     /* Private classes */
     private lateinit var nfc: Nfc
 
-    /* Internal variables */
-    private lateinit var tagScriptPath: String
+    /* Internal constants */
     private val tagScriptName = "script.sh"
     private val requestCodeSelectScript = 1
+
+    /* Internal variables */
+    private lateinit var tagScriptPath: String
+    private lateinit var readyToFlashDialog: AlertDialog
     private var pendingScriptBytes = byteArrayOf()
     private var currentlyExecuting = AtomicBoolean()
-
-    /* Ready to flash dialog */
-    private lateinit var readyToFlashDialog: AlertDialog
 
     /* UI Elements */
     private lateinit var scrollView: ScrollView
