@@ -9,7 +9,7 @@
     <item
         android:id="@+id/flash"
         android:icon="@drawable/ic_unarchive_24dp"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="@string/flash"/>
 
     <item
