@@ -49,6 +49,7 @@ class Nfc {
     fun writeBytes(intent: Intent?, bytes: ByteArray): Exception? {
         var exception: Exception? = null
         val currentTag = intent?.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+            ?: return Exception("Tag could not be located.")
 
         /* Connect to the tag and return exception if we fail */
         val ndef = Ndef.get(currentTag) ?: return IOException("There is no scanned tag.")
