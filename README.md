@@ -23,7 +23,7 @@ Originally I made this app for running benchmarking commands. It can be a hassle
 6. If you have too large of a script, consider using `curl [http://path/to/script.sh] | sh` in conjunction with tip #3
 
 # Camera Permission
-This app requires the camera permission, soley for scanning QR codes and barcodes. No data is sent online at all.
+Google requires a privacy policy to be created when the camera permission is requested. It is used exclusively for QR code and barcode reading. This application does not have access to the internet at all. Your data is always stored locally.
 
 # Contact
 - Telegram: @tytydraco
