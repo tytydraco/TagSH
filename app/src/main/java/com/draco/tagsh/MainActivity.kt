@@ -33,54 +33,38 @@ class MainActivity : AppCompatActivity() {
     private lateinit var scrollView: ScrollView
     private lateinit var outputView: TextView
 
-    /* Flash saved script contents to NFC tag */
-    private fun flashScriptToTag(intent: Intent) {
-        val exception = nfc.writeBytes(intent, pendingScriptBytes)
-
-        if (exception != null)
-            Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()
-
-        readyToFlashDialog.dismiss()
-
-        /* Clear pending bytes for security */
-        pendingScriptBytes = byteArrayOf()
-    }
-
-    /* Load script from storage and get ready to flash */
-    private fun loadScriptFromStorage(uri: Uri?) {
-        /* Valid Uri check */
-        if (uri == null)
-            return
-
+    /* Load script from storage into memory for flashing */
+    private fun loadScriptFromUri(uri: Uri) {
         /* Read contents of script */
         val inputStream = contentResolver.openInputStream(uri)
+
+        /* Make sure we have a valid input stream */
         if (inputStream == null) {
             Toast.makeText(this, "Could not read script.", Toast.LENGTH_SHORT).show()
             return
         }
+
         pendingScriptBytes = inputStream.readBytes()
         inputStream.close()
-        readyToFlashDialog.show()
     }
 
-    /* Select script from storage */
-    private fun selectScriptFromStorage() {
+    /* Prompt user to select a script from storage */
+    private fun promptSelectScript() {
         val intent = Intent()
             .setType("*/*")
             .setAction(Intent.ACTION_GET_CONTENT)
+
         val chooserIntent = Intent.createChooser(intent, "Select script")
         startActivityForResult(chooserIntent, requestCodeSelectScript)
     }
 
-    /* Write our script using the script byte array */
-    private fun writeScript(bytes: ByteArray) {
+    /* First write out script to internal storage, then execute it */
+    private fun executeScriptFromBytes(bytes: ByteArray) {
+        /* Write our script using bytes as it is most versatile */
         val fileOutputStream = openFileOutput(scriptName, Context.MODE_PRIVATE)
         fileOutputStream.write(bytes)
         fileOutputStream.close()
-    }
 
-    /* Execute our saved script */
-    private fun executeScript() {
         /* Clear any existing output */
         outputView.text = ""
 
@@ -125,12 +109,72 @@ class MainActivity : AppCompatActivity() {
         }.start()
     }
 
-    /* Execute whatever script is on NFC tag */
-    private fun executeScriptFromTag(intent: Intent) {
-        /* Read contents as compressed bytes */
-        val nfcContent = nfc.readBytes(intent) ?: return
-        writeScript(nfcContent)
-        executeScript()
+    /* When our script selection intent finishes */
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        /* Don't bother if we failed */
+        if (resultCode != Activity.RESULT_OK)
+            return
+
+        /* Load script bytes into memory and prompt user to scan tag */
+        if (requestCode == requestCodeSelectScript &&
+            data != null &&
+            data.data != null) {
+                loadScriptFromUri(data.data!!)
+                readyToFlashDialog.show()
+
+            return
+        }
+
+        /* If we just scanned a QR code or barcode, execute it as a script */
+        val scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (scanResult != null && scanResult.contents != null)
+            executeScriptFromBytes(scanResult.contents.toByteArray())
+    }
+
+    /* On toolbar menu item click */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.flash -> {
+                /* Ask user to select script from storage */
+                promptSelectScript()
+            }
+
+            R.id.scan -> {
+                /* Initiate QR or barcode scan */
+                IntentIntegrator(this)
+                    .setPrompt("")
+                    .setBeepEnabled(false)
+                    .setOrientationLocked(false)
+                    .initiateScan()
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    /* Catch Nfc tag scan in our foreground intent filter */
+    override fun onNewIntent(thisIntent: Intent?) {
+        super.onNewIntent(thisIntent)
+
+        /* Call Nfc tag handler if we are sure this is an Nfc scan */
+        if (thisIntent == null)
+            return
+
+        /* Decide what to do with the scanned tag */
+        if (readyToFlashDialog.isShowing) {
+            /* Flash script to NFC tag */
+            val exception = nfc.writeBytes(thisIntent, pendingScriptBytes)
+            readyToFlashDialog.dismiss()
+
+            /* If there was an issue, report it */
+            if (exception != null)
+                Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()
+        } else if (!currentlyExecuting.get()) {
+            /* Try to execute whatever script is on the tag */
+            executeScriptFromBytes(nfc.readBytes(thisIntent) ?: return)
+        }
     }
 
     /* On activity creation */
@@ -167,50 +211,11 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton("Okay", null)
                 .show()
 
-        /* Check if we opened the app due to a Nfc event */
-        executeScriptFromTag(intent)
+        /* Try to execute whatever script is on the tag */
+        executeScriptFromBytes(nfc.readBytes(intent) ?: return)
     }
 
     /* ----- Miscellaneous Setup ----- */
-
-    /* When our script selection intent finishes */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (resultCode != Activity.RESULT_OK)
-            return
-
-        if (requestCode == requestCodeSelectScript)
-            if (data != null)
-                loadScriptFromStorage(data.data!!)
-
-        val scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-        if (scanResult != null && scanResult.contents != null) {
-            writeScript(scanResult.contents.toByteArray())
-            executeScript()
-        }
-    }
-
-    /* On toolbar menu item click */
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.flash -> {
-                /* Ask user to select script from storage */
-                selectScriptFromStorage()
-            }
-
-            R.id.scan -> {
-                /* Initiate QR or barcode scan */
-                IntentIntegrator(this)
-                    .setPrompt("")
-                    .setBeepEnabled(false)
-                    .setOrientationLocked(false)
-                    .initiateScan()
-            }
-        }
-
-        return super.onOptionsItemSelected(item)
-    }
 
     /* Inflate custom menu to toolbar */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -228,20 +233,5 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         nfc.disableForegroundIntent(this)
-    }
-
-    /* Catch Nfc tag scan in our foreground intent filter */
-    override fun onNewIntent(thisIntent: Intent?) {
-        super.onNewIntent(thisIntent)
-
-        /* Call Nfc tag handler if we are sure this is an Nfc scan */
-        if (thisIntent == null)
-            return
-
-        /* Decide what to do with the scanned tag */
-        if (readyToFlashDialog.isShowing)
-            flashScriptToTag(thisIntent)
-        else if (!currentlyExecuting.get())
-            executeScriptFromTag(thisIntent)
     }
 }
