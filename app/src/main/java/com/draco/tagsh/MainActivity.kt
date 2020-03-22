@@ -163,6 +163,11 @@ class MainActivity : AppCompatActivity() {
             R.id.clear -> {
                 outputView.text = ""
             }
+
+            /* Show privacy policy */
+            R.id.privacy_policy -> {
+                privacyPolicyDialog.show()
+            }
         }
 
         return super.onOptionsItemSelected(item)
@@ -206,12 +211,14 @@ class MainActivity : AppCompatActivity() {
         /* Setup privacy policy dialog */
         privacyPolicyDialog = AlertDialog.Builder(this)
             .setTitle("Privacy Policy")
-            .setMessage(getString(R.string.privacy_policy))
+            .setMessage(getString(R.string.privacy_policy_text))
             .setPositiveButton("Accept") { _, _ ->
                 editor.putBoolean(privacyPolicyPrefName, true)
                 editor.apply()
             }
             .setNegativeButton("Decline") { _, _ ->
+                editor.putBoolean(privacyPolicyPrefName, false)
+                editor.apply()
                 Toast.makeText(this,
                     "QR and barcode scanning require Privacy Policy consent.",
                     Toast.LENGTH_SHORT).show()
