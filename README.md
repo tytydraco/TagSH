@@ -22,8 +22,8 @@ Originally I made this app for running benchmarking commands. It can be a hassle
 5. Clean up your code. Remove any unnecessary comments or extraneous code to make it small enough to fit on an NFC tag.
 6. If you have too large of a script, consider using `curl [http://path/to/script.sh] | sh` in conjunction with tip #3
 
-# Camera Permission
-Google requires a privacy policy to be created when the camera permission is requested. It is used exclusively for QR code and barcode reading. This application does not have access to the internet at all. Your data is always stored locally.
+# Privacy Policy
+The application owner, Tyler Nijmeh, is required to request your consent for this Privacy Policy in order to utilize the Camera permission on this device. Your camera data is used exclusively for QR code and barcode scanning functionality within the app itself. Your camera information never leaves this device in any form. This application never accesses the internet whatsoever. No third-party organizations access your camera data. You may decline this Privacy Policy if you wish, however, QR code and barcode scanning functionality will not operate unless you accept the Privacy Policy. You will be prompted to accept the Privacy Policy when you attempt to click the "scan" menu item if you have not accepted it previously. This privacy policy is effective as of March 22nd, 2020.
 
 # Contact
 - Telegram: @tytydraco
