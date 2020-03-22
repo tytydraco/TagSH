@@ -23,12 +23,15 @@ class MainActivity : AppCompatActivity() {
 
     /* Internal constants */
     private val scriptName = "script.sh"
+    private val privacyPolicyPrefName = "privacyPolicyAccepted"
+    private val firstLaunchPrefName = "firstLaunch"
     private val requestCodeSelectScript = 1
 
     /* Internal variables */
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var scriptPath: String
+    private lateinit var privacyPolicyDialog: AlertDialog
     private lateinit var readyToFlashDialog: AlertDialog
     private var pendingScriptBytes = byteArrayOf()
     private var currentlyExecuting = AtomicBoolean()
@@ -142,6 +145,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.scan -> {
+                /* Ask user to accept the privacy policy */
+                if (!privacyPolicyAccepted()) {
+                    privacyPolicyDialog.show()
+                    return super.onOptionsItemSelected(item)
+                }
+
                 /* Initiate QR or barcode scan */
                 IntentIntegrator(this)
                     .setPrompt("")
@@ -189,18 +198,21 @@ class MainActivity : AppCompatActivity() {
         outputView = findViewById(R.id.output)
         scriptPath = "${filesDir}/${scriptName}"
 
-        /* Privacy policy */
-        if (sharedPrefs.getBoolean("firstLaunch", true)) {
-            readyToFlashDialog = AlertDialog.Builder(this)
-                .setTitle("Privacy Policy")
-                .setMessage(getString(R.string.privacy_policy))
-                .setPositiveButton("Okay", null)
-                .setCancelable(false)
-                .show()
-
-            editor.putBoolean("firstLaunch", false)
-            editor.apply()
-        }
+        /* Setup privacy policy dialog */
+        privacyPolicyDialog = AlertDialog.Builder(this)
+            .setTitle("Privacy Policy")
+            .setMessage(getString(R.string.privacy_policy))
+            .setPositiveButton("Accept") { _, _ ->
+                editor.putBoolean(privacyPolicyPrefName, true)
+                editor.apply()
+            }
+            .setNegativeButton("Decline") { _, _ ->
+                Toast.makeText(this,
+                    "QR and barcode scanning require Privacy Policy consent.",
+                    Toast.LENGTH_SHORT).show()
+            }
+            .setCancelable(false)
+            .create()
 
         /* Setup ready to flash dialog */
         readyToFlashDialog = AlertDialog.Builder(this)
@@ -218,6 +230,14 @@ class MainActivity : AppCompatActivity() {
         /* Allow Nfc tags to be scanned while the app is opened */
         nfc.setupForegroundIntent(this)
 
+        /* Ask user to accept the privacy policy on first launch */
+        if (sharedPrefs.getBoolean(firstLaunchPrefName, true)) {
+            privacyPolicyDialog.show()
+
+            editor.putBoolean(firstLaunchPrefName, false)
+            editor.apply()
+        }
+
         /* Warn the user that NFC is either disabled or unsupported */
         if (nfc.supportState() != Nfc.State.SUPPORTED_ON)
             AlertDialog.Builder(this)
@@ -231,6 +251,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     /* ----- Miscellaneous Setup ----- */
+
+    /* Returns current status on privacy policy acceptance */
+    private fun privacyPolicyAccepted(): Boolean {
+        return sharedPrefs.getBoolean(privacyPolicyPrefName, false)
+    }
 
     /* Inflate custom menu to toolbar */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
