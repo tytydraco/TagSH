@@ -3,4 +3,5 @@
     <string name="flash">Flash To Tag</string>
     <string name="scan">Scan Code</string>
     <string name="empty_text">Scan an TagSH NFC tag to execute it.</string>
+    <string name="privacy_policy">Google requires a privacy policy to be created when the camera permission is requested. It is used exclusively for QR code and barcode reading. This application does not have access to the internet at all. Your data is always stored locally.</string>
 </resources>

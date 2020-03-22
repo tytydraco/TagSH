@@ -3,6 +3,7 @@ package com.draco.tagsh
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
@@ -12,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 import com.google.zxing.integration.android.IntentIntegrator
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -24,6 +26,8 @@ class MainActivity : AppCompatActivity() {
     private val requestCodeSelectScript = 1
 
     /* Internal variables */
+    private lateinit var sharedPrefs: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
     private lateinit var scriptPath: String
     private lateinit var readyToFlashDialog: AlertDialog
     private var pendingScriptBytes = byteArrayOf()
@@ -179,9 +183,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         /* Lateinit setup */
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
+        editor = sharedPrefs.edit()
         scrollView = findViewById(R.id.scrollView)
         outputView = findViewById(R.id.output)
         scriptPath = "${filesDir}/${scriptName}"
+
+        /* Privacy policy */
+        if (sharedPrefs.getBoolean("firstLaunch", true)) {
+            readyToFlashDialog = AlertDialog.Builder(this)
+                .setTitle("Privacy Policy")
+                .setMessage(getString(R.string.privacy_policy))
+                .setPositiveButton("Okay", null)
+                .setCancelable(false)
+                .show()
+
+            editor.putBoolean("firstLaunch", false)
+            editor.apply()
+        }
 
         /* Setup ready to flash dialog */
         readyToFlashDialog = AlertDialog.Builder(this)
