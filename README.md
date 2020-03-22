@@ -12,6 +12,7 @@ Originally I made this app for running benchmarking commands. It can be a hassle
 - App can be closed when you scan the tag
 - Script is stored directly on the tag, so it's universal
 - Can work without root (permissions are limited of course)
+- QR code and barcode scanning
 
 # Tips
 1. Make sure to use LF (UNIX) style line endings. Using the Windows default line ending style will break the script.
@@ -20,6 +21,9 @@ Originally I made this app for running benchmarking commands. It can be a hassle
 4. Use `input keyevent KEYCODE_HOME` or `input keyevent 3` to make your script exit TagSH on completion (elevated permissions required).
 5. Clean up your code. Remove any unnecessary comments or extraneous code to make it small enough to fit on an NFC tag.
 6. If you have too large of a script, consider using `curl [http://path/to/script.sh] | sh` in conjunction with tip #3
+
+# Camera Permission
+This app requires the camera permission, soley for scanning QR codes and barcodes. No data is sent online at all.
 
 # Contact
 - Telegram: @tytydraco
