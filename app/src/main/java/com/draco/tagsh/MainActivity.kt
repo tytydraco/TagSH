@@ -84,19 +84,15 @@ class MainActivity : AppCompatActivity() {
                     val currentText = outputView.text.toString()
                     val newText = currentText + it + "\n"
 
-                    val shouldScrollDown = !scrollView.canScrollVertically(1)
-
                     /* Update output text */
                     outputView.text = newText
 
                     /* Scroll to bottom of text */
-                    if (shouldScrollDown) {
-                        scrollView.post {
-                            /* When the text is selectable, it causes scroll jitter */
-                            outputView.setTextIsSelectable(false)
-                            scrollView.fullScroll(ScrollView.FOCUS_DOWN)
-                            outputView.setTextIsSelectable(true)
-                        }
+                    scrollView.post {
+                        /* When the text is selectable, it causes scroll jitter */
+                        outputView.setTextIsSelectable(false)
+                        scrollView.fullScroll(ScrollView.FOCUS_DOWN)
+                        outputView.setTextIsSelectable(true)
                     }
                 }
             }
