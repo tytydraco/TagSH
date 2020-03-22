@@ -217,7 +217,7 @@ class MainActivity : AppCompatActivity() {
         /* Setup ready to flash dialog */
         readyToFlashDialog = AlertDialog.Builder(this)
             .setTitle("Ready to Flash")
-            .setMessage("Please scan an NFC tag to flash your script.")
+            .setMessage("Please scan an NFC tag to flash your script. Ensure that NFC is enabled.")
             .setPositiveButton("Cancel", null)
             .create()
 
@@ -237,14 +237,6 @@ class MainActivity : AppCompatActivity() {
             editor.putBoolean(firstLaunchPrefName, false)
             editor.apply()
         }
-
-        /* Warn the user that NFC is either disabled or unsupported */
-        if (nfc.supportState() != Nfc.State.SUPPORTED_ON)
-            AlertDialog.Builder(this)
-                .setTitle("NFC Disabled")
-                .setMessage("NFC is either disabled or unsupported on this device. Make sure you enable NFC to use TagSH.")
-                .setPositiveButton("Okay", null)
-                .show()
 
         /* Try to execute whatever script is on the tag */
         executeScriptFromBytes(nfc.readBytes(intent) ?: return)
