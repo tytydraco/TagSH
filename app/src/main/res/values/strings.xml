@@ -3,5 +3,5 @@
     <string name="flash">Flash To Tag</string>
     <string name="scan">Scan Code</string>
     <string name="empty_text">Scan an TagSH NFC tag to execute it.</string>
-    <string name="privacy_policy">Google requires a privacy policy to be created when the camera permission is requested. It is used exclusively for QR code and barcode reading. This application does not have access to the internet at all. Your data is always stored locally.</string>
+    <string name="privacy_policy">The application owner, Tyler Nijmeh, is required to request your consent for this Privacy Policy in order to utilize the Camera permission on this device. Your camera data is used exclusively for QR code and barcode scanning functionality within the app itself. Your camera information never leaves this device in any form. This application never accesses the internet whatsoever. No third-party organizations access your camera data. You may decline this Privacy Policy if you wish, however, QR code and barcode scanning functionality will not operate unless you accept the Privacy Policy. You will be prompted to accept the Privacy Policy when you attempt to click the "scan" menu item if you have not accepted it previously. This privacy policy is effective as of March 22nd, 2020.</string>
 </resources>
