@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/scan"
+        android:icon="@drawable/ic_photo_camera_24dp"
+        app:showAsAction="ifRoom"
+        android:title="@string/scan"/>
+    <item
         android:id="@+id/flash"
         android:icon="@drawable/ic_unarchive_24dp"
         app:showAsAction="always"
