@@ -158,6 +158,11 @@ class MainActivity : AppCompatActivity() {
                     .setOrientationLocked(false)
                     .initiateScan()
             }
+
+            /* Clear terminal output */
+            R.id.clear -> {
+                outputView.text = ""
+            }
         }
 
         return super.onOptionsItemSelected(item)

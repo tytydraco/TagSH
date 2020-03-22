@@ -11,4 +11,9 @@
         android:icon="@drawable/ic_unarchive_24dp"
         app:showAsAction="always"
         android:title="@string/flash"/>
+
+    <item
+        android:id="@+id/clear"
+        app:showAsAction="withText"
+        android:title="@string/clear"/>
 </menu>
