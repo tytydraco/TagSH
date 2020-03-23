@@ -15,6 +15,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import com.google.zxing.integration.android.IntentIntegrator
+import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 
 class MainActivity : AppCompatActivity() {
@@ -78,8 +79,9 @@ class MainActivity : AppCompatActivity() {
         /* Execute in another thread */
         Thread {
             currentlyExecuting.set(true)
-            /* Execute shell script */
+            /* Execute shell script in the cache directory as a working environment */
             val processBuilder = ProcessBuilder("sh", scriptPath)
+                .directory(cacheDir)
                 .redirectErrorStream(true)
                 .start()
 
@@ -115,6 +117,9 @@ class MainActivity : AppCompatActivity() {
 
             /* Delete script for security reasons */
             deleteFile(scriptName)
+
+            /* Delete working directory files (anything script may have created) */
+            cacheDir.deleteRecursively()
         }.start()
     }
 
