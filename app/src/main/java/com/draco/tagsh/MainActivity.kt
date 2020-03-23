@@ -85,11 +85,14 @@ class MainActivity : AppCompatActivity() {
 
             val bufferedReader = processBuilder.inputStream.bufferedReader()
 
-            /* Buffer output to outputView */
-            bufferedReader.forEachLine {
+            /* Buffer output to outputView as long as we want to keep running */
+            while (currentlyExecuting.get()) {
+                /* Try to fetch the next line, or break if we are already finished */
+                val line = bufferedReader.readLine() ?: break
+
                 runOnUiThread {
                     val currentText = outputView.text.toString()
-                    val newText = currentText + it + "\n"
+                    val newText = currentText + line + "\n"
 
                     /* Update output text */
                     outputView.text = newText
@@ -106,6 +109,9 @@ class MainActivity : AppCompatActivity() {
 
             /* Signal that we are finished */
             currentlyExecuting.set(false)
+
+            /* Ensure we kill the process */
+            processBuilder.destroy()
 
             /* Delete script for security reasons */
             deleteFile(scriptName)
@@ -157,6 +163,11 @@ class MainActivity : AppCompatActivity() {
                     .setBeepEnabled(false)
                     .setOrientationLocked(false)
                     .initiateScan()
+            }
+
+            /* Kill the currently running process */
+            R.id.kill -> {
+                currentlyExecuting.set(false)
             }
 
             /* Clear terminal output */

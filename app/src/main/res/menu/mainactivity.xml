@@ -13,6 +13,10 @@
         android:title="@string/flash"/>
 
     <item
+        android:id="@+id/kill"
+        app:showAsAction="withText"
+        android:title="@string/kill"/>
+    <item
         android:id="@+id/clear"
         app:showAsAction="withText"
         android:title="@string/clear"/>
