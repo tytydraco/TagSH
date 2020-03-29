@@ -56,7 +56,8 @@ class Nfc {
 
         val newBytes = Compression.safeCompress(bytes)
 
-        if (newBytes.size > ndef.maxSize)
+        /* Ensure we account for both our bytes and our mime type string */
+        if (newBytes.size + mimeType.length > ndef.maxSize)
             return IOException("Contents are too large.")
 
         /* Don't bother writing if read-only */
