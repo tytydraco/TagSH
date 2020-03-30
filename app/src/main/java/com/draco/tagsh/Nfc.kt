@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.nfc.*
 import android.nfc.tech.Ndef
-import android.util.Log
 import java.io.IOException
 
 class Nfc {
@@ -31,11 +30,23 @@ class Nfc {
 
     /* Get the byte contents of a Nfc tag */
     fun readBytes(intent: Intent?): ByteArray? {
-        val parcelables = intent?.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
+        /* Check if we can even access the tag */
+        val currentTag = intent?.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
+            ?: return null
 
-        /* Don't process nothing! */
-        if (parcelables.isNullOrEmpty())
+        /* Connect to the tag and return exception if we fail */
+        val ndef = Ndef.get(currentTag) ?: return null
+
+        /* If the tag is read only, fail */
+        if (!ndef.isWritable)
             return null
+
+        /* Parse any messages */
+        val parcelables = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
+
+        /* Empty tags are still tags */
+        if (parcelables.isNullOrEmpty())
+            return byteArrayOf()
 
         /* Get the first record */
         val ndefMessage = parcelables[0] as NdefMessage
