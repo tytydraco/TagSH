@@ -3,28 +3,28 @@
     <PreferenceCategory android:title="Customization">
         <EditTextPreference
             android:key="fontSize"
-            android:summary="Change the font size of the terminal text."
             android:title="Font Size"
+            android:summary="Change the font size of the terminal text."
             android:defaultValue="14" />
         <EditTextPreference
             android:key="backgroundColor"
-            android:summary="Change the color of the terminal background."
             android:title="Background Color"
+            android:summary="Change the color of the terminal background."
             android:defaultValue="#000000" />
         <EditTextPreference
             android:key="foregroundColor"
-            android:summary="Change the color of the terminal text."
             android:title="Foreground Color"
+            android:summary="Change the color of the terminal text."
             android:defaultValue="#ffffff" />
     </PreferenceCategory>
     <PreferenceCategory android:title="About">
         <Preference
             android:key="github"
-            android:summary="View the source code for this application."
-            android:title="Github" />
+            android:title="Github"
+            android:summary="View the source code for this application." />
         <Preference
             android:key="contact"
-            android:summary="Send me an email for support or feedback."
-            android:title="Contact" />
+            android:title="Contact"
+            android:summary="Send me an email for support or feedback." />
     </PreferenceCategory>
 </PreferenceScreen>
