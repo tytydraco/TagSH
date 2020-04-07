@@ -76,12 +76,15 @@ class MainActivity : AppCompatActivity() {
         /* Clear any existing output */
         outputView.text = ""
 
+        /* Delete working directory files (anything script may have created) */
+        getExternalFilesDir(null)!!.deleteRecursively()
+
         /* Execute in another thread */
         Thread {
             currentlyExecuting.set(true)
             /* Execute shell script in the cache directory as a working environment */
             val processBuilder = ProcessBuilder("sh", scriptPath)
-                .directory(cacheDir)
+                .directory(getExternalFilesDir(null))
                 .redirectErrorStream(true)
                 .start()
 
@@ -117,9 +120,6 @@ class MainActivity : AppCompatActivity() {
 
             /* Delete script for security reasons */
             deleteFile(scriptName)
-
-            /* Delete working directory files (anything script may have created) */
-            cacheDir.deleteRecursively()
         }.start()
     }
 
