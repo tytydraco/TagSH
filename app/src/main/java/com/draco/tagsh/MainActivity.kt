@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toDrawable
 import androidx.preference.PreferenceManager
 import com.google.zxing.integration.android.IntentIntegrator
 import java.io.File
@@ -287,10 +288,15 @@ class MainActivity : AppCompatActivity() {
 
         if (!backgroundColor.isNullOrBlank())
             try {
-                window.decorView.setBackgroundColor(Color.parseColor(backgroundColor))
+                val color = Color.parseColor(backgroundColor)
+                window.decorView.setBackgroundColor(color)
+                supportActionBar!!.setBackgroundDrawable(color.toDrawable())
             } catch (_: IllegalArgumentException) {}
-        else
-            window.decorView.setBackgroundColor(getColor(R.color.colorPrimaryDark))
+        else {
+            val color = getColor(R.color.colorPrimaryDark)
+            window.decorView.setBackgroundColor(color)
+            supportActionBar!!.setBackgroundDrawable(color.toDrawable())
+        }
 
         if (!foregroundColor.isNullOrBlank())
             try {
