@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="Customization">
+        <SwitchPreference
+            android:key="wordWrap"
+            android:title="Word Wrap"
+            android:summary="Wrap words to the next line once they touch the edge of the screen."
+            android:defaultValue="true" />
         <EditTextPreference
             android:key="fontSize"
             android:title="Font Size"

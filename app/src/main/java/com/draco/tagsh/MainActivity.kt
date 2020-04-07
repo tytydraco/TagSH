@@ -16,6 +16,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import com.google.zxing.integration.android.IntentIntegrator
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.Exception
@@ -256,11 +257,13 @@ class MainActivity : AppCompatActivity() {
     /* Update terminal output settings */
     private fun updateOutputViewConfig() {
         /* Use blank strings as default so a user can clear their configuration */
+        val wordWrap = sharedPrefs.getBoolean("wordWrap", true)
         val fontSize = sharedPrefs.getString("fontSize", "")
         val backgroundColor = sharedPrefs.getString("backgroundColor", "")
         val foregroundColor = sharedPrefs.getString("foregroundColor", "")
+        
+        outputView.setHorizontallyScrolling(!wordWrap)
 
-        /* If user input is bad, try to just skip that part */
         if (!fontSize.isNullOrBlank()) {
             val size = fontSize.toFloatOrNull()
             if (size != null)
