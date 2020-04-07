@@ -216,6 +216,12 @@ class MainActivity : AppCompatActivity() {
             R.id.privacy_policy -> {
                 privacyPolicyDialog.show()
             }
+
+            /* Open settings activity */
+            R.id.settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+            }
         }
 
         return super.onOptionsItemSelected(item)

@@ -28,4 +28,8 @@
         android:id="@+id/privacy_policy"
         app:showAsAction="withText"
         android:title="@string/privacy_policy"/>
+    <item
+        android:id="@+id/settings"
+        app:showAsAction="withText"
+        android:title="@string/settings"/>
 </menu>
