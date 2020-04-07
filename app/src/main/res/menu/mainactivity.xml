@@ -21,6 +21,10 @@
         app:showAsAction="withText"
         android:title="@string/clear"/>
     <item
+        android:id="@+id/clean"
+        app:showAsAction="withText"
+        android:title="@string/clean"/>
+    <item
         android:id="@+id/privacy_policy"
         app:showAsAction="withText"
         android:title="@string/privacy_policy"/>

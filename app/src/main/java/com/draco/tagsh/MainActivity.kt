@@ -198,6 +198,11 @@ class MainActivity : AppCompatActivity() {
                 outputView.text = ""
             }
 
+            /* Clean all files in working directory */
+            R.id.clean -> {
+                getBestWorkingDir().deleteRecursively()
+            }
+
             /* Show privacy policy */
             R.id.privacy_policy -> {
                 privacyPolicyDialog.show()

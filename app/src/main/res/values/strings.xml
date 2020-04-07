@@ -4,6 +4,7 @@
     <string name="scan">Scan Code</string>
     <string name="kill">Kill Process</string>
     <string name="clear">Clear Output</string>
+    <string name="clean">Clean Working Directory</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="empty_text">Scan an TagSH NFC tag to execute it.</string>
     <string name="privacy_policy_text">The application owner, Tyler Nijmeh, is required to request your consent for this Privacy Policy in order to utilize the Camera permission on this device. Your camera data is used exclusively for QR code and barcode scanning functionality within the app itself. Your camera information never leaves this device in any form. No third-party organizations access your camera data. You may decline this Privacy Policy if you wish, however, QR code and barcode scanning functionality will not operate unless you accept the Privacy Policy. You will be prompted to accept the Privacy Policy when you attempt to click the "scan" menu item if you have not accepted it previously. This privacy policy is effective as of March 22nd, 2020.</string>
