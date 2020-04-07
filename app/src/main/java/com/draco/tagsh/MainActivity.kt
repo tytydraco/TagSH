@@ -1,7 +1,6 @@
 package com.draco.tagsh
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
@@ -16,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import com.google.zxing.integration.android.IntentIntegrator
 import java.io.File
+import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicBoolean
 
 class MainActivity : AppCompatActivity() {
@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
     /* Internal variables */
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
-    private lateinit var scriptPath: String
     private lateinit var privacyPolicyDialog: AlertDialog
     private lateinit var readyToFlashDialog: AlertDialog
     private var pendingScriptBytes = byteArrayOf()
@@ -98,25 +97,24 @@ class MainActivity : AppCompatActivity() {
 
     /* First write out script to internal storage, then execute it */
     private fun executeScriptFromBytes(bytes: ByteArray) {
+        /* Clean and prepare working directory */
+        val workingDir = prepareWorkingDir()
+
         /* Write our script using bytes as it is most versatile */
-        val fileOutputStream = openFileOutput(scriptName, Context.MODE_PRIVATE)
+        val fileOutput = File("${workingDir.absolutePath}/${scriptName}")
+        val fileOutputStream = FileOutputStream(fileOutput)
         fileOutputStream.write(bytes)
         fileOutputStream.close()
 
         /* Clear any existing output */
         outputView.text = ""
 
-        val workingDirectory = getBestWorkingDir()
-
-        /* Delete working directory files (anything script may have created) */
-        workingDirectory.deleteRecursively()
-
         /* Execute in another thread */
         Thread {
             currentlyExecuting.set(true)
-            /* Execute shell script in the cache directory as a working environment */
-            val processBuilder = ProcessBuilder("sh", scriptPath)
-                .directory(workingDirectory)
+            /* Execute shell script from internal storage in the working environment */
+            val processBuilder = ProcessBuilder("sh", fileOutput.absolutePath)
+                .directory(workingDir)
                 .redirectErrorStream(true)
                 .start()
 
@@ -151,7 +149,7 @@ class MainActivity : AppCompatActivity() {
             processBuilder.destroy()
 
             /* Delete script for security reasons */
-            deleteFile(scriptName)
+            fileOutput.delete()
         }.start()
     }
 
@@ -259,7 +257,6 @@ class MainActivity : AppCompatActivity() {
         editor = sharedPrefs.edit()
         scrollView = findViewById(R.id.scrollView)
         outputView = findViewById(R.id.output)
-        scriptPath = "${filesDir}/${scriptName}"
 
         /* Setup privacy policy dialog */
         privacyPolicyDialog = AlertDialog.Builder(this)
