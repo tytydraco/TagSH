@@ -3,6 +3,7 @@ package com.draco.tagsh
 import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -116,7 +117,8 @@ class MainActivity : AppCompatActivity() {
         fileOutputStream.close()
 
         /* Clear any existing output */
-        outputView.text = ""
+        if (sharedPrefs.getBoolean("autoClear", true))
+            outputView.text = ""
 
         /* Execute in another thread */
         Thread {
@@ -263,10 +265,16 @@ class MainActivity : AppCompatActivity() {
     /* Update terminal output settings */
     private fun updateOutputViewConfig() {
         /* Use blank strings as default so a user can clear their configuration */
+        val allowRotation = sharedPrefs.getBoolean("allowRotation", true)
         val wordWrap = sharedPrefs.getBoolean("wordWrap", true)
         val fontSize = sharedPrefs.getString("fontSize", "")
         val backgroundColor = sharedPrefs.getString("backgroundColor", "")
         val foregroundColor = sharedPrefs.getString("foregroundColor", "")
+
+        requestedOrientation = if (allowRotation)
+            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        else
+            ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
 
         outputView.setHorizontallyScrolling(!wordWrap)
 

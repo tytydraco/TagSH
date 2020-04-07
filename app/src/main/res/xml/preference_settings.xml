@@ -12,12 +12,22 @@
             android:summary="Show the contents of the script instead of running it."
             android:defaultValue="false" />
         <SwitchPreference
+            android:key="autoClear"
+            android:title="Clear Output"
+            android:summary="Before script execution, clear the terminal output."
+            android:defaultValue="true" />
+        <SwitchPreference
             android:key="autoClean"
             android:title="Clean Environment"
             android:summary="Before script execution, clear out the entire working directory."
             android:defaultValue="true" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Customization">
+        <SwitchPreference
+            android:key="allowRotation"
+            android:title="Allow Rotation"
+            android:summary="Allow both portrait and landscape orientations."
+            android:defaultValue="true" />
         <SwitchPreference
             android:key="wordWrap"
             android:title="Word Wrap"
