@@ -51,6 +51,10 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="About">
         <Preference
+            android:key="viewStore"
+            android:title="View Store Page"
+            android:summary="View this application on the Google Play Store." />
+        <Preference
             android:key="github"
             android:title="Github"
             android:summary="View the source code for this application." />
