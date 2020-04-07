@@ -57,6 +57,20 @@ class MainActivity : AppCompatActivity() {
         return filesDir
     }
 
+    /* Clean and prepare working directory and return its path */
+    private fun prepareWorkingDir(): File {
+        /* Find best choice of working dir */
+        val workingDir = getBestWorkingDir()
+
+        /* Delete everything in it */
+        workingDir.deleteRecursively()
+
+        /* Recreate clean working dir */
+        workingDir.mkdirs()
+
+        return workingDir
+    }
+
     /* Load script from storage into memory for flashing */
     private fun loadScriptFromUri(uri: Uri) {
         /* Read contents of script */
@@ -200,7 +214,7 @@ class MainActivity : AppCompatActivity() {
 
             /* Clean all files in working directory */
             R.id.clean -> {
-                getBestWorkingDir().deleteRecursively()
+                prepareWorkingDir()
             }
 
             /* Show privacy policy */
