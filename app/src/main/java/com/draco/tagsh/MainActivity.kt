@@ -41,6 +41,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var scrollView: ScrollView
     private lateinit var outputView: TextView
 
+    /* Choose the best accessible working directory for the script */
+    private fun getBestWorkingDir(): File {
+        val externalFilesDir = getExternalFilesDir(null)
+
+        /* ~/Android/data/id/files */
+        if (externalFilesDir != null)
+            return externalFilesDir
+
+        /* ~/Android/data/id/cache */
+        if (externalCacheDir != null)
+            return externalCacheDir!!
+
+        /* /data/data/id/files */
+        return filesDir
+    }
+
     /* Load script from storage into memory for flashing */
     private fun loadScriptFromUri(uri: Uri) {
         /* Read contents of script */
@@ -76,15 +92,17 @@ class MainActivity : AppCompatActivity() {
         /* Clear any existing output */
         outputView.text = ""
 
+        val workingDirectory = getBestWorkingDir()
+
         /* Delete working directory files (anything script may have created) */
-        getExternalFilesDir(null)!!.deleteRecursively()
+        workingDirectory.deleteRecursively()
 
         /* Execute in another thread */
         Thread {
             currentlyExecuting.set(true)
             /* Execute shell script in the cache directory as a working environment */
             val processBuilder = ProcessBuilder("sh", scriptPath)
-                .directory(getExternalFilesDir(null))
+                .directory(workingDirectory)
                 .redirectErrorStream(true)
                 .start()
 
