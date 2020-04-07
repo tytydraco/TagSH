@@ -61,12 +61,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     /* Clean and prepare working directory and return its path */
-    private fun prepareWorkingDir(): File {
+    private fun prepareWorkingDir(delete: Boolean = true): File {
         /* Find best choice of working dir */
         val workingDir = getBestWorkingDir()
 
         /* Delete everything in it */
-        workingDir.deleteRecursively()
+        if (delete)
+            workingDir.deleteRecursively()
 
         /* Recreate clean working dir */
         workingDir.mkdirs()
@@ -108,7 +109,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         /* Clean and prepare working directory */
-        val workingDir = prepareWorkingDir()
+        val autoClean = sharedPrefs.getBoolean("autoClean", true)
+        val workingDir = prepareWorkingDir(autoClean)
 
         /* Write our script using bytes as it is most versatile */
         val fileOutput = File("${workingDir.absolutePath}/${scriptName}")
@@ -135,7 +137,8 @@ class MainActivity : AppCompatActivity() {
                 /* Try to fetch the next line, or break if we are already finished */
                 val line = bufferedReader.readLine() ?: break
 
-                runOnUiThread {
+                /* Pipe output to display */
+                if (sharedPrefs.getBoolean("showOutput", true)) runOnUiThread {
                     val currentText = outputView.text.toString()
                     val newText = currentText + line + "\n"
 

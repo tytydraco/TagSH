@@ -2,10 +2,20 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="Execution">
         <SwitchPreference
+            android:key="showOutput"
+            android:title="Show Output"
+            android:summary="Pipe the output of the script to the screen."
+            android:defaultValue="true" />
+        <SwitchPreference
             android:key="viewOnly"
             android:title="View Only"
             android:summary="Show the contents of the script instead of running it."
             android:defaultValue="false" />
+        <SwitchPreference
+            android:key="autoClean"
+            android:title="Clean Environment"
+            android:summary="Before script execution, clear out the entire working directory."
+            android:defaultValue="true" />
     </PreferenceCategory>
     <PreferenceCategory android:title="Customization">
         <SwitchPreference
