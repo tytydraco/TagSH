@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="Execution">
+        <SwitchPreference
+            android:key="viewOnly"
+            android:title="View Only"
+            android:summary="Show the contents of the script instead of running it."
+            android:defaultValue="false" />
+    </PreferenceCategory>
     <PreferenceCategory android:title="Customization">
         <SwitchPreference
             android:key="wordWrap"

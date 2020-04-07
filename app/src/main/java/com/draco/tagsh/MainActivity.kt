@@ -101,6 +101,12 @@ class MainActivity : AppCompatActivity() {
 
     /* First write out script to internal storage, then execute it */
     private fun executeScriptFromBytes(bytes: ByteArray) {
+        /* If we have View Only mode on, only show the script contents */
+        if (sharedPrefs.getBoolean("viewOnly", false)) {
+            outputView.text = String(bytes)
+            return
+        }
+
         /* Clean and prepare working directory */
         val workingDir = prepareWorkingDir()
 
@@ -261,7 +267,7 @@ class MainActivity : AppCompatActivity() {
         val fontSize = sharedPrefs.getString("fontSize", "")
         val backgroundColor = sharedPrefs.getString("backgroundColor", "")
         val foregroundColor = sharedPrefs.getString("foregroundColor", "")
-        
+
         outputView.setHorizontallyScrolling(!wordWrap)
 
         if (!fontSize.isNullOrBlank()) {
