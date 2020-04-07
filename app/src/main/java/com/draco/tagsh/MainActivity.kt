@@ -147,9 +147,6 @@ class MainActivity : AppCompatActivity() {
 
             /* Ensure we kill the process */
             processBuilder.destroy()
-
-            /* Delete script for security reasons */
-            fileOutput.delete()
         }.start()
     }
 
