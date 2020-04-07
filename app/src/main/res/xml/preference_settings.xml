@@ -56,7 +56,7 @@
             android:summary="View this application on the Google Play Store." />
         <Preference
             android:key="github"
-            android:title="Github"
+            android:title="GitHub"
             android:summary="View the source code for this application." />
         <Preference
             android:key="contact"
