@@ -3,6 +3,8 @@ package com.draco.tagsh
 import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
@@ -16,6 +18,7 @@ import androidx.preference.PreferenceManager
 import com.google.zxing.integration.android.IntentIntegrator
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.Exception
 import java.util.concurrent.atomic.AtomicBoolean
 
 class MainActivity : AppCompatActivity() {
@@ -250,6 +253,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /* Update terminal output settings */
+    private fun updateOutputViewConfig() {
+        /* Use blank strings as default so a user can clear their configuration */
+        val fontSize = sharedPrefs.getString("fontSize", "")
+        val backgroundColor = sharedPrefs.getString("backgroundColor", "")
+        val foregroundColor = sharedPrefs.getString("foregroundColor", "")
+
+        /* If user input is bad, try to just skip that part */
+        if (!fontSize.isNullOrBlank()) {
+            val size = fontSize.toFloatOrNull()
+            if (size != null)
+                outputView.textSize = size
+        } else
+            outputView.textSize = 14f
+
+        if (!backgroundColor.isNullOrBlank())
+            try {
+                window.decorView.setBackgroundColor(Color.parseColor(backgroundColor))
+            } catch (_: IllegalArgumentException) {}
+        else
+            window.decorView.setBackgroundColor(getColor(R.color.colorPrimaryDark))
+
+        if (!foregroundColor.isNullOrBlank())
+            try {
+                outputView.setTextColor(Color.parseColor(foregroundColor))
+            } catch (_: IllegalArgumentException) {}
+        else
+            outputView.setTextColor(getColor(R.color.colorText))
+
+    }
+
     /* On activity creation */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -285,6 +319,9 @@ class MainActivity : AppCompatActivity() {
             .setMessage("Please scan an NFC tag to flash your script. Ensure that NFC is enabled.")
             .setPositiveButton("Cancel", null)
             .create()
+
+        /* Configure our terminal using user configuration */
+        updateOutputViewConfig()
 
         /* Register our Nfc helper class */
         nfc = Nfc()
@@ -324,6 +361,9 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         nfc.enableForegroundIntent(this)
+
+        /* We may have come back from the settings page, so update the view */
+        updateOutputViewConfig()
     }
 
     /* Disable foreground scanning */
