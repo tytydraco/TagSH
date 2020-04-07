@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
@@ -16,10 +15,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import com.google.zxing.integration.android.IntentIntegrator
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.Exception
 import java.util.concurrent.atomic.AtomicBoolean
 
 class MainActivity : AppCompatActivity() {
@@ -125,12 +122,12 @@ class MainActivity : AppCompatActivity() {
         Thread {
             currentlyExecuting.set(true)
             /* Execute shell script from internal storage in the working environment */
-            val processBuilder = ProcessBuilder("sh", fileOutput.absolutePath)
+            val process = ProcessBuilder("sh", fileOutput.absolutePath)
                 .directory(workingDir)
                 .redirectErrorStream(true)
                 .start()
 
-            val bufferedReader = processBuilder.inputStream.bufferedReader()
+            val bufferedReader = process.inputStream.bufferedReader()
 
             /* Buffer output to outputView as long as we want to keep running */
             while (currentlyExecuting.get()) {
@@ -159,7 +156,7 @@ class MainActivity : AppCompatActivity() {
             currentlyExecuting.set(false)
 
             /* Ensure we kill the process */
-            processBuilder.destroy()
+            process.destroy()
         }.start()
     }
 
