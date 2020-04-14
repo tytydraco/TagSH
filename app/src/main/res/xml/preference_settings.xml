@@ -21,6 +21,10 @@
             android:title="Clean Environment"
             android:summary="Before script execution, clear out the entire working directory."
             android:defaultValue="true" />
+        <Preference
+            android:key="grantStorageAccess"
+            android:title="Grant Storage Access"
+            android:summary="Allow scripts to access external storage with very few restrictions." />
     </PreferenceCategory>
     <PreferenceCategory android:title="Customization">
         <SwitchPreference
