@@ -17,8 +17,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import androidx.preference.PreferenceManager
 import com.google.zxing.integration.android.IntentIntegrator
+import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.lang.Exception
+import java.lang.StringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
 class MainActivity : AppCompatActivity() {
@@ -102,15 +105,10 @@ class MainActivity : AppCompatActivity() {
 
     /* First write out script to internal storage, then execute it */
     private fun executeScriptFromBytes(bytes: ByteArray) {
-        /* If we have View Only mode on, only show the script contents */
-        if (sharedPrefs.getBoolean("viewOnly", false)) {
-            outputView.text = String(bytes)
-            return
-        }
-
         /* Clean and prepare working directory */
         val autoClean = sharedPrefs.getBoolean("autoClean", true)
         val workingDir = prepareWorkingDir(autoClean)
+        val readOnlyMode = sharedPrefs.getBoolean("viewOnly", false)
 
         /* Write our script using bytes as it is most versatile */
         val fileOutput = File("${workingDir.absolutePath}/${scriptName}")
@@ -126,12 +124,19 @@ class MainActivity : AppCompatActivity() {
         Thread {
             currentlyExecuting.set(true)
             /* Execute shell script from internal storage in the working environment */
-            val process = ProcessBuilder("sh", fileOutput.absolutePath)
-                .directory(workingDir)
-                .redirectErrorStream(true)
-                .start()
+            val process = if (!readOnlyMode)
+                ProcessBuilder("sh", fileOutput.absolutePath)
+                    .directory(workingDir)
+                    .redirectErrorStream(true)
+                    .start()
+            else
+                null
 
-            val bufferedReader = process.inputStream.bufferedReader()
+            /* If we are in read only mode, use our bytes as the input */
+            val bufferedReader = if (!readOnlyMode)
+                process!!.inputStream.bufferedReader()
+            else
+                BufferedInputStream(bytes.inputStream()).bufferedReader()
 
             /* Buffer output to outputView as long as we want to keep running */
             while (currentlyExecuting.get()) {
@@ -160,7 +165,7 @@ class MainActivity : AppCompatActivity() {
             currentlyExecuting.set(false)
 
             /* Ensure we kill the process */
-            process.destroy()
+            process?.destroy()
         }.start()
     }
 
