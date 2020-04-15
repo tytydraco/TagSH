@@ -11,6 +11,11 @@
         android:icon="@drawable/ic_unarchive_24dp"
         app:showAsAction="ifRoom"
         android:title="@string/flash"/>
+    <item
+        android:id="@+id/run"
+        android:icon="@drawable/ic_open_in_browser_24dp"
+        app:showAsAction="ifRoom"
+        android:title="@string/run"/>
 
     <item
         android:id="@+id/kill"

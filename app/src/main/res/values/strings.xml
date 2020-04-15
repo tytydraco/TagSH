@@ -2,6 +2,7 @@
     <string name="app_name">TagSH</string>
     <string name="flash">Flash To Tag</string>
     <string name="scan">Scan Code</string>
+    <string name="run">Run Script</string>
     <string name="kill">Kill Process</string>
     <string name="clear">Clear Output</string>
     <string name="clean">Clean Working Directory</string>

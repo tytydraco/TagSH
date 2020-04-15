@@ -29,7 +29,8 @@ class MainActivity : AppCompatActivity() {
     private val scriptName = "script.sh"
     private val privacyPolicyPrefName = "privacyPolicyAccepted"
     private val firstLaunchPrefName = "firstLaunch"
-    private val requestCodeSelectScript = 1
+    private val requestCodeFlash = 1
+    private val requestCodeRun = 2
 
     /* Internal variables */
     private lateinit var sharedPrefs: SharedPreferences
@@ -90,13 +91,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     /* Prompt user to select a script from storage */
-    private fun promptSelectScript() {
+    private fun promptSelectScript(requestCode: Int) {
         val intent = Intent()
             .setType("*/*")
             .setAction(Intent.ACTION_GET_CONTENT)
 
         val chooserIntent = Intent.createChooser(intent, "Select script")
-        startActivityForResult(chooserIntent, requestCodeSelectScript)
+        startActivityForResult(chooserIntent, requestCode)
     }
 
     /* First write out script to internal storage, then execute it */
@@ -172,11 +173,21 @@ class MainActivity : AppCompatActivity() {
             return
 
         /* Load script bytes into memory and prompt user to scan tag */
-        if (requestCode == requestCodeSelectScript &&
+        if (requestCode == requestCodeFlash &&
             data != null &&
             data.data != null) {
                 loadScriptFromUri(data.data!!)
                 readyToFlashDialog.show()
+
+            return
+        }
+
+        /* Load script bytes into memory and execute it */
+        if (requestCode == requestCodeRun &&
+            data != null &&
+            data.data != null) {
+            loadScriptFromUri(data.data!!)
+            executeScriptFromBytes(pendingScriptBytes)
 
             return
         }
@@ -190,11 +201,13 @@ class MainActivity : AppCompatActivity() {
     /* On toolbar menu item click */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            /* Flash script to tag */
             R.id.flash -> {
                 /* Ask user to select script from storage */
-                promptSelectScript()
+                promptSelectScript(requestCodeFlash)
             }
 
+            /* Scan QR or barcode */
             R.id.scan -> {
                 /* Ask user to accept the privacy policy */
                 if (!privacyPolicyAccepted()) {
@@ -208,6 +221,12 @@ class MainActivity : AppCompatActivity() {
                     .setBeepEnabled(false)
                     .setOrientationLocked(false)
                     .initiateScan()
+            }
+
+            /* Run locally stored script */
+            R.id.run -> {
+                /* Ask user to select script from storage */
+                promptSelectScript(requestCodeRun)
             }
 
             /* Kill the currently running process */
