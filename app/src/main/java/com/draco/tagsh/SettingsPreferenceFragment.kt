@@ -26,7 +26,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                 if (activity != null)
                     ActivityCompat.requestPermissions(activity as Activity,
                         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_SECURE_SETTINGS),
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE),
                         requestCodeStoragePermissions);
             }
 
