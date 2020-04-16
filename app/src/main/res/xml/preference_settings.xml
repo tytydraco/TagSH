@@ -21,6 +21,17 @@
             android:title="Clean Environment"
             android:summary="Before script execution, clear out the entire working directory."
             android:defaultValue="true" />
+        <SwitchPreference
+            android:key="holdWakelock"
+            android:title="Hold Wakelock"
+            android:summary="Keep the CPU awake during script execution."
+            android:defaultValue="false" />
+        <EditTextPreference
+            android:key="wakelockTimeout"
+            android:title="Wakelock Timeout"
+            android:summary="The maximum number of seconds to hold the wakelock."
+            android:defaultValue="60"
+            android:dependency="holdWakelock" />
         <Preference
             android:key="grantStorageAccess"
             android:title="Grant Storage Access"

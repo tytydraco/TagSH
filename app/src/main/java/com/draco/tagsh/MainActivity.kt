@@ -1,13 +1,14 @@
 package com.draco.tagsh
 
-import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.PowerManager
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ScrollView
@@ -31,12 +32,14 @@ class MainActivity : AppCompatActivity() {
     private val scriptName = "script.sh"
     private val privacyPolicyPrefName = "privacyPolicyAccepted"
     private val firstLaunchPrefName = "firstLaunch"
+    private val wakelockTag = "TagSH::Executing"
     private val requestCodeFlash = 1
     private val requestCodeRun = 2
 
     /* Internal variables */
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
+    private lateinit var powerManager: PowerManager
     private lateinit var privacyPolicyDialog: AlertDialog
     private lateinit var readyToFlashDialog: AlertDialog
     private var pendingScriptBytes = byteArrayOf()
@@ -122,6 +125,19 @@ class MainActivity : AppCompatActivity() {
         /* Execute in another thread */
         Thread {
             currentlyExecuting.set(true)
+
+            /* Hold a wakelock if we need to */
+            val wakelock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakelockTag)
+            if (sharedPrefs.getBoolean("holdWakelock", true)) {
+                val timeoutString = sharedPrefs.getString("wakelockTimeout", "60")
+                var timeout = 60
+                if (!timeoutString.isNullOrBlank())
+                    try {
+                        timeout = Integer.parseInt(timeoutString)
+                    } catch (_: NumberFormatException) {}
+                wakelock.acquire(timeout * 1000L)
+            }
+
             /* Execute shell script from internal storage in the working environment */
             val process = if (!readOnlyMode)
                 ProcessBuilder("sh", fileOutput.absolutePath)
@@ -160,6 +176,10 @@ class MainActivity : AppCompatActivity() {
 
             /* Signal that we are finished */
             currentlyExecuting.set(false)
+
+            /* Release our wakelock */
+            if (wakelock.isHeld)
+                wakelock.release()
 
             /* Ensure we kill the process */
             process?.destroy()
@@ -335,6 +355,7 @@ class MainActivity : AppCompatActivity() {
         /* Lateinit setup */
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
         editor = sharedPrefs.edit()
+        powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
         scrollView = findViewById(R.id.scrollView)
         outputView = findViewById(R.id.output)
 
