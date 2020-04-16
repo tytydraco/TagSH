@@ -23,6 +23,7 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.max
 
 class MainActivity : AppCompatActivity() {
     /* Private classes */
@@ -134,7 +135,7 @@ class MainActivity : AppCompatActivity() {
                 var timeout = 60
                 if (!timeoutString.isNullOrBlank())
                     try {
-                        timeout = Integer.parseInt(timeoutString)
+                        timeout = Integer.parseInt(timeoutString).coerceAtLeast(1)
                     } catch (_: NumberFormatException) {}
                 wakelock.acquire(timeout * 1000L)
             }
@@ -167,7 +168,7 @@ class MainActivity : AppCompatActivity() {
                 var bufferSize = 100
                 if (!bufferSizeString.isNullOrBlank())
                     try {
-                        bufferSize = Integer.parseInt(bufferSizeString)
+                        bufferSize = Integer.parseInt(bufferSizeString).coerceAtLeast(1)
                     } catch (_: NumberFormatException) {}
 
                 /* Before we enter the main thread, join our buffer into a string */
@@ -341,7 +342,7 @@ class MainActivity : AppCompatActivity() {
         if (!fontSize.isNullOrBlank()) {
             val size = fontSize.toFloatOrNull()
             if (size != null)
-                outputView.textSize = size
+                outputView.textSize = size.coerceAtLeast(1f)
         } else
             outputView.textSize = 14f
 
