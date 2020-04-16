@@ -54,6 +54,11 @@
             android:summary="Scroll down when the terminal output changes."
             android:defaultValue="true" />
         <EditTextPreference
+            android:key="bufferSize"
+            android:title="Buffer Size"
+            android:summary="Number of terminal lines to display at a time. Large values can cause stutter."
+            android:defaultValue="100" />
+        <EditTextPreference
             android:key="fontSize"
             android:title="Font Size"
             android:summary="Change the font size of the terminal text."

@@ -44,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var readyToFlashDialog: AlertDialog
     private var pendingScriptBytes = byteArrayOf()
     private var currentlyExecuting = AtomicBoolean()
+    private var outputBuffer = arrayListOf<String>()
 
     /* UI Elements */
     private lateinit var scrollView: ScrollView
@@ -120,7 +121,7 @@ class MainActivity : AppCompatActivity() {
 
         /* Clear any existing output */
         if (sharedPrefs.getBoolean("autoClear", true))
-            outputView.text = ""
+            outputBuffer.clear()
 
         /* Execute in another thread */
         Thread {
@@ -158,11 +159,28 @@ class MainActivity : AppCompatActivity() {
                 /* Try to fetch the next line, or break if we are already finished */
                 val line = bufferedReader.readLine() ?: break
 
+                /* Add line to our buffer */
+                outputBuffer.add(line)
+
+                /* Before we enter the main thread, calculate our buffer size */
+                val bufferSizeString = sharedPrefs.getString("bufferSize", "100")
+                var bufferSize = 100
+                if (!bufferSizeString.isNullOrBlank())
+                    try {
+                        bufferSize = Integer.parseInt(bufferSizeString)
+                    } catch (_: NumberFormatException) {}
+
+                /* Before we enter the main thread, join our buffer into a string */
+                val trimmedBuffer = outputBuffer.takeLast(bufferSize)
+                val bufferedString = trimmedBuffer.joinToString("")
+
+                /* Keep our buffer at a constant size to not use excess memory */
+                outputBuffer = ArrayList(trimmedBuffer)
+
                 /* Pipe output to display */
                 if (sharedPrefs.getBoolean("showOutput", true)) runOnUiThread {
-                    /* Update text using a new variable to avoid concatenation lint */
-                    val newText = outputView.text.toString() + line + "\n"
-                    outputView.text = newText
+                    /* Update text using lines from our buffer */
+                    outputView.text = bufferedString
 
                     /* Scroll to bottom of text */
                     if (sharedPrefs.getBoolean("autoScroll", true)) scrollView.post {
