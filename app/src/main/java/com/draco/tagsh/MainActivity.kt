@@ -1,5 +1,6 @@
 package com.draco.tagsh
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
@@ -143,10 +144,8 @@ class MainActivity : AppCompatActivity() {
 
                 /* Pipe output to display */
                 if (sharedPrefs.getBoolean("showOutput", true)) runOnUiThread {
-                    val currentText = outputView.text.toString()
-                    val newText = currentText + line + "\n"
-
-                    /* Update output text */
+                    /* Update text using a new variable to avoid concatenation lint */
+                    val newText = outputView.text.toString() + line + "\n"
                     outputView.text = newText
 
                     /* Scroll to bottom of text */
