@@ -20,8 +20,6 @@ import com.google.zxing.integration.android.IntentIntegrator
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.Exception
-import java.lang.StringBuilder
 import java.util.concurrent.atomic.AtomicBoolean
 
 class MainActivity : AppCompatActivity() {
@@ -328,7 +326,6 @@ class MainActivity : AppCompatActivity() {
             } catch (_: IllegalArgumentException) {}
         else
             outputView.setTextColor(getColor(R.color.colorText))
-
     }
 
     /* On activity creation */
