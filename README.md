@@ -24,6 +24,9 @@ Originally I made this app for running benchmarking commands. It can be a hassle
 # Privacy Policy
 The application owner, Tyler Nijmeh, is required to request your consent for this Privacy Policy in order to utilize the Camera permission on this device. Your camera data is used exclusively for QR code and barcode scanning functionality within the app itself. Your camera information never leaves this device in any form. No third-party organizations access your camera data. You may decline this Privacy Policy if you wish, however, QR code and barcode scanning functionality will not operate unless you accept the Privacy Policy. You will be prompted to accept the Privacy Policy when you attempt to click the "scan" menu item if you have not accepted it previously. This privacy policy is effective as of March 22nd, 2020.
 
+# Disclaimer
+Please note that this application does not include any form of warranty coverage for your device. Be aware that the user takes full responsibility when they choose to execute scripts using this application. It may be wise to use the appliation's built-in "View Only" setting to view the contents of the script _before_ deciding to execute it. It is highly recommended to take **extreme** precaution when executing unknown or untrusted scripts. If you have any concerns, please contact the developer of this application.
+
 # Contact
 - Telegram: @tytydraco
 - Email: tylernij@gmail.com
