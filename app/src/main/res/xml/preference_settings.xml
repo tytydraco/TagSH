@@ -37,6 +37,11 @@
             android:title="Word Wrap"
             android:summary="Wrap words to the next line once they touch the edge of the screen."
             android:defaultValue="true" />
+        <SwitchPreference
+            android:key="autoScroll"
+            android:title="Automatically Scroll"
+            android:summary="Scroll down when the terminal output changes."
+            android:defaultValue="true" />
         <EditTextPreference
             android:key="fontSize"
             android:title="Font Size"

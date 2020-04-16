@@ -149,7 +149,7 @@ class MainActivity : AppCompatActivity() {
                     outputView.text = newText
 
                     /* Scroll to bottom of text */
-                    scrollView.post {
+                    if (sharedPrefs.getBoolean("autoScroll", true)) scrollView.post {
                         /* When the text is selectable, it causes scroll jitter */
                         outputView.setTextIsSelectable(false)
                         scrollView.fullScroll(ScrollView.FOCUS_DOWN)
