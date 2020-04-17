@@ -34,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private val privacyPolicyPrefName = "privacyPolicyAccepted"
     private val firstLaunchPrefName = "firstLaunch"
     private val wakelockTag = "TagSH::Executing"
+    private val maxScriptSize = 1024 * 1024 * 4
     private val requestCodeFlash = 1
     private val requestCodeRun = 2
 
@@ -93,7 +94,10 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        pendingScriptBytes = inputStream.readBytes()
+        /* Allocate and read a maximum of maxScriptSize bytes */
+        pendingScriptBytes = ByteArray(maxScriptSize)
+        inputStream.read(pendingScriptBytes, 0, maxScriptSize)
+
         inputStream.close()
     }
 
