@@ -54,6 +54,11 @@
             android:summary="Scroll down when the terminal output changes."
             android:defaultValue="true" />
         <EditTextPreference
+            android:key="welcomeMessage"
+            android:title="Welcome Message"
+            android:summary="Set the text that displays when you launch the application."
+            android:defaultValue="Scan an NFC tag to execute it." />
+        <EditTextPreference
             android:key="bufferSize"
             android:title="Buffer Size"
             android:summary="Number of terminal lines to display at a time. Large values can cause stutter."

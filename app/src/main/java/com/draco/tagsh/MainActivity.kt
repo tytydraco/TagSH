@@ -378,6 +378,11 @@ class MainActivity : AppCompatActivity() {
         scrollView = findViewById(R.id.scrollView)
         outputView = findViewById(R.id.output)
 
+        /* Set welcome message */
+        val welcomeMessage = sharedPrefs.getString("welcomeMessage", "Scan an NFC tag to execute it.")
+        if (!welcomeMessage.isNullOrBlank())
+            outputView.text = welcomeMessage
+
         /* Setup privacy policy dialog */
         privacyPolicyDialog = AlertDialog.Builder(this)
             .setTitle("Privacy Policy")
