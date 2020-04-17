@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity() {
 
                 /* Before we enter the main thread, join our buffer into a string */
                 val trimmedBuffer = outputBuffer.takeLast(bufferSize)
-                val bufferedString = trimmedBuffer.joinToString("")
+                val bufferedString = trimmedBuffer.joinToString(System.lineSeparator())
 
                 /* Keep our buffer at a constant size to not use excess memory */
                 outputBuffer = ArrayList(trimmedBuffer)
