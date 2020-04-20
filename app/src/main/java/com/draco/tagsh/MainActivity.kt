@@ -95,8 +95,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         /* Allocate and read a maximum of maxScriptSize bytes */
-        pendingScriptBytes = ByteArray(maxScriptSize)
-        inputStream.read(pendingScriptBytes, 0, maxScriptSize)
+        val tempBuffer = ByteArray(maxScriptSize)
+        val bytesRead = inputStream.read(tempBuffer, 0, maxScriptSize)
+        pendingScriptBytes = ByteArray(bytesRead)
+        System.arraycopy(tempBuffer, 0, pendingScriptBytes, 0, bytesRead)
 
         inputStream.close()
     }
