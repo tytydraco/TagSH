@@ -31,8 +31,6 @@ class MainActivity : AppCompatActivity() {
 
     /* Internal constants */
     private val scriptName = "script.sh"
-    private val privacyPolicyPrefName = "privacyPolicyAccepted"
-    private val firstLaunchPrefName = "firstLaunch"
     private val wakelockTag = "TagSH::Executing"
     private val maxScriptSize = 1024 * 1024 * 4
     private val requestCodeFlash = 1
@@ -256,7 +254,7 @@ class MainActivity : AppCompatActivity() {
             /* Scan QR or barcode */
             R.id.scan -> {
                 /* Ask user to accept the privacy policy */
-                if (!privacyPolicyAccepted()) {
+                if (!sharedPrefs.getBoolean("privacyPolicyAccepted", false)) {
                     privacyPolicyDialog.show()
                     return super.onOptionsItemSelected(item)
                 }
@@ -393,11 +391,11 @@ class MainActivity : AppCompatActivity() {
             .setTitle("Privacy Policy")
             .setMessage(getString(R.string.privacy_policy_text))
             .setPositiveButton("Accept") { _, _ ->
-                editor.putBoolean(privacyPolicyPrefName, true)
+                editor.putBoolean("privacyPolicyAccepted", true)
                 editor.apply()
             }
             .setNegativeButton("Decline") { _, _ ->
-                editor.putBoolean(privacyPolicyPrefName, false)
+                editor.putBoolean("privacyPolicyAccepted", false)
                 editor.apply()
                 Toast.makeText(this,
                     "QR and barcode scanning require Privacy Policy consent.",
@@ -426,10 +424,10 @@ class MainActivity : AppCompatActivity() {
         nfc.setupForegroundIntent(this)
 
         /* Ask user to accept the privacy policy on first launch */
-        if (sharedPrefs.getBoolean(firstLaunchPrefName, true)) {
+        if (sharedPrefs.getBoolean("firstLaunch", true)) {
             privacyPolicyDialog.show()
 
-            editor.putBoolean(firstLaunchPrefName, false)
+            editor.putBoolean("firstLaunch", false)
             editor.apply()
         }
 
@@ -438,11 +436,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     /* ----- Miscellaneous Setup ----- */
-
-    /* Returns current status on privacy policy acceptance */
-    private fun privacyPolicyAccepted(): Boolean {
-        return sharedPrefs.getBoolean(privacyPolicyPrefName, false)
-    }
 
     /* Inflate custom menu to toolbar */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
