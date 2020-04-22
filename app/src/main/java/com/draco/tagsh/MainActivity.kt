@@ -112,6 +112,10 @@ class MainActivity : AppCompatActivity() {
 
     /* First write out script to internal storage, then execute it */
     private fun executeScriptFromBytes(bytes: ByteArray) {
+        /* Do not run multiple scripts simultaneously */
+        if (currentlyExecuting.get())
+            return
+
         /* Clean and prepare working directory */
         val autoClean = sharedPrefs.getBoolean("autoClean", true)
         val workingDir = prepareWorkingDir(autoClean)
@@ -319,7 +323,7 @@ class MainActivity : AppCompatActivity() {
             /* If there was an issue, report it */
             if (exception != null)
                 Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()
-        } else if (!currentlyExecuting.get()) {
+        } else {
             /* Try to execute whatever script is on the tag */
             executeScriptFromBytes(nfc.readBytes(thisIntent) ?: return)
         }
