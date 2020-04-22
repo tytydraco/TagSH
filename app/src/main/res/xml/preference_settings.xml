@@ -2,20 +2,10 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="Execution">
         <SwitchPreference
-            android:key="showOutput"
-            android:title="Show Output"
-            android:summary="Pipe the output of the script to the screen."
-            android:defaultValue="true" />
-        <SwitchPreference
             android:key="viewOnly"
             android:title="View Only"
             android:summary="Show the contents of the script instead of running it."
             android:defaultValue="false" />
-        <SwitchPreference
-            android:key="autoClear"
-            android:title="Clear Output"
-            android:summary="Before script execution, clear the terminal output."
-            android:defaultValue="true" />
         <SwitchPreference
             android:key="autoClean"
             android:title="Clean Environment"
@@ -38,11 +28,6 @@
             android:summary="Allow scripts to access external storage with very few restrictions." />
     </PreferenceCategory>
     <PreferenceCategory android:title="Customization">
-        <SwitchPreference
-            android:key="allowRotation"
-            android:title="Allow Rotation"
-            android:summary="Allow both portrait and landscape orientations."
-            android:defaultValue="true" />
         <SwitchPreference
             android:key="wordWrap"
             android:title="Word Wrap"

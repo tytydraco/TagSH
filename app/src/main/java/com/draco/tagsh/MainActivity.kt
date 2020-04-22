@@ -124,8 +124,7 @@ class MainActivity : AppCompatActivity() {
         fileOutputStream.close()
 
         /* Clear any existing output */
-        if (sharedPrefs.getBoolean("autoClear", true))
-            outputBuffer.clear()
+        outputBuffer.clear()
 
         /* Execute in another thread */
         Thread {
@@ -182,7 +181,7 @@ class MainActivity : AppCompatActivity() {
                 outputBuffer = ArrayList(trimmedBuffer)
 
                 /* Pipe output to display */
-                if (sharedPrefs.getBoolean("showOutput", true)) runOnUiThread {
+                runOnUiThread {
                     /* Update text using lines from our buffer */
                     outputView.text = bufferedString
 
@@ -329,16 +328,10 @@ class MainActivity : AppCompatActivity() {
     /* Update terminal output settings */
     private fun updateOutputViewConfig() {
         /* Use blank strings as default so a user can clear their configuration */
-        val allowRotation = sharedPrefs.getBoolean("allowRotation", true)
         val wordWrap = sharedPrefs.getBoolean("wordWrap", true)
         val fontSize = sharedPrefs.getString("fontSize", "")
         val backgroundColor = sharedPrefs.getString("backgroundColor", "")
         val foregroundColor = sharedPrefs.getString("foregroundColor", "")
-
-        requestedOrientation = if (allowRotation)
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-        else
-            ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
 
         outputView.setHorizontallyScrolling(!wordWrap)
 
