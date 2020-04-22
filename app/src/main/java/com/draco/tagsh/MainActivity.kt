@@ -285,6 +285,7 @@ class MainActivity : AppCompatActivity() {
 
             /* Clear terminal output */
             R.id.clear -> {
+                outputBuffer.clear()
                 outputView.text = ""
             }
 
