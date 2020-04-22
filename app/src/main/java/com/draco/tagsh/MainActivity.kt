@@ -116,23 +116,25 @@ class MainActivity : AppCompatActivity() {
         if (currentlyExecuting.get())
             return
 
-        /* Clean and prepare working directory */
-        val autoClean = sharedPrefs.getBoolean("autoClean", true)
-        val workingDir = prepareWorkingDir(autoClean)
-        val readOnlyMode = sharedPrefs.getBoolean("viewOnly", false)
-
-        /* Write our script using bytes as it is most versatile */
-        val fileOutput = File("${workingDir.absolutePath}/${scriptName}")
-        val fileOutputStream = FileOutputStream(fileOutput)
-        fileOutputStream.write(bytes)
-        fileOutputStream.close()
-
-        /* Clear any existing output */
-        outputBuffer.clear()
-
         /* Execute in another thread */
         Thread {
             currentlyExecuting.set(true)
+
+            /* Clean and prepare working directory */
+            val autoClean = sharedPrefs.getBoolean("autoClean", true)
+            val workingDir = prepareWorkingDir(autoClean)
+            val readOnlyMode = sharedPrefs.getBoolean("viewOnly", false)
+
+            /* Write our script using bytes as it is most versatile */
+            val fileOutput = File("${workingDir.absolutePath}/${scriptName}")
+            val fileOutputStream = FileOutputStream(fileOutput)
+            fileOutputStream.write(bytes)
+            fileOutputStream.close()
+
+            /* Clear any existing output */
+            runOnUiThread {
+                outputBuffer.clear()
+            }
 
             /* Hold a wakelock if we need to */
             val wakelock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakelockTag)
