@@ -251,7 +251,13 @@ class MainActivity : AppCompatActivity() {
             /* Flash script to tag */
             R.id.flash -> {
                 /* Ask user to select script from storage */
-                promptSelectScript(requestCodeFlash)
+                when (nfc.supportState()) {
+                    Nfc.State.SUPPORTED_ON -> promptSelectScript(requestCodeFlash)
+                    Nfc.State.SUPPORTED_OFF ->
+                        Toast.makeText(this, "Enable NFC to use this feature.", Toast.LENGTH_SHORT).show()
+                    Nfc.State.UNSUPPORTED ->
+                        Toast.makeText(this, "Your device does not support NFC.", Toast.LENGTH_SHORT).show()
+                }
             }
 
             /* Scan QR or barcode */
