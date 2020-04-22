@@ -132,9 +132,7 @@ class MainActivity : AppCompatActivity() {
             fileOutputStream.close()
 
             /* Clear any existing output */
-            runOnUiThread {
-                outputBuffer.clear()
-            }
+            outputBuffer.clear()
 
             /* Hold a wakelock if we need to */
             val wakelock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakelockTag)
