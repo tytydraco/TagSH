@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.content.pm.ActivityInfo
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -19,32 +18,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toDrawable
 import androidx.preference.PreferenceManager
 import com.google.zxing.integration.android.IntentIntegrator
-import java.io.BufferedInputStream
 import java.io.File
-import java.io.FileOutputStream
-import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.math.max
 
 class MainActivity : AppCompatActivity() {
     /* Private classes */
     private lateinit var nfc: Nfc
+    private lateinit var execution: Execution
 
     /* Internal constants */
-    private val scriptName = "script.sh"
-    private val wakelockTag = "TagSH::Executing"
-    private val maxScriptSize = 1024 * 1024 * 4
+    private val maxScriptSize = 1024 * 32
     private val requestCodeFlash = 1
     private val requestCodeRun = 2
 
     /* Internal variables */
     private lateinit var sharedPrefs: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
-    private lateinit var powerManager: PowerManager
     private lateinit var privacyPolicyDialog: AlertDialog
     private lateinit var readyToFlashDialog: AlertDialog
     private var pendingScriptBytes = byteArrayOf()
-    private var currentlyExecuting = AtomicBoolean()
-    private var outputBuffer = arrayListOf<String>()
 
     /* UI Elements */
     private lateinit var scrollView: ScrollView
@@ -110,104 +101,62 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(chooserIntent, requestCode)
     }
 
+    private fun updateOutputView() {
+        outputView.text = execution.outputBuffer.joinToString(System.lineSeparator())
+
+        if (sharedPrefs.getBoolean("autoScroll", true)) scrollView.post {
+            outputView.setTextIsSelectable(false)
+            scrollView.fullScroll(ScrollView.FOCUS_DOWN)
+            outputView.setTextIsSelectable(true)
+        }
+    }
+
     /* First write out script to internal storage, then execute it */
     private fun executeScriptFromBytes(bytes: ByteArray) {
-        /* Do not run multiple scripts simultaneously */
-        if (currentlyExecuting.get())
+        if (execution.executing.get())
             return
+
+        if (sharedPrefs.getBoolean("viewOnly", false)) {
+            outputView.text = String(bytes)
+            return
+        }
+
+        val execParams = ExecParams()
+        with (execParams) {
+            scriptBytes = bytes
+            workingDir = prepareWorkingDir(sharedPrefs.getBoolean("autoClean", true))
+            holdWakelock = sharedPrefs.getBoolean("holdWakelock", false)
+
+            val wakelockTimeoutString = sharedPrefs.getString("wakelockTimeout", "60")
+            if (!wakelockTimeoutString.isNullOrBlank()) try {
+                wakelockTimeout = Integer.parseInt(wakelockTimeoutString).coerceAtLeast(1)
+            } catch (_: NumberFormatException) {}
+
+            val bufferSizeString = sharedPrefs.getString("bufferSize", "100")
+            if (!bufferSizeString.isNullOrBlank()) try {
+                bufferSize = Integer.parseInt(bufferSizeString).coerceAtLeast(1)
+            } catch (_: NumberFormatException) {}
+        }
 
         /* Execute in another thread */
         Thread {
-            currentlyExecuting.set(true)
+            execution.execute(execParams)
+        }.start()
 
-            /* Clean and prepare working directory */
-            val autoClean = sharedPrefs.getBoolean("autoClean", true)
-            val workingDir = prepareWorkingDir(autoClean)
-            val readOnlyMode = sharedPrefs.getBoolean("viewOnly", false)
-
-            /* Write our script using bytes as it is most versatile */
-            val fileOutput = File("${workingDir.absolutePath}/${scriptName}")
-            val fileOutputStream = FileOutputStream(fileOutput)
-            fileOutputStream.write(bytes)
-            fileOutputStream.close()
-
-            /* Clear any existing output */
-            outputBuffer.clear()
-
-            /* Hold a wakelock if we need to */
-            val wakelock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakelockTag)
-            if (sharedPrefs.getBoolean("holdWakelock", false)) {
-                val timeoutString = sharedPrefs.getString("wakelockTimeout", "60")
-                var timeout = 60
-                if (!timeoutString.isNullOrBlank())
-                    try {
-                        timeout = Integer.parseInt(timeoutString).coerceAtLeast(1)
-                    } catch (_: NumberFormatException) {}
-                wakelock.acquire(timeout * 1000L)
-            }
-
-            /* Execute shell script from internal storage in the working environment */
-            val process = if (!readOnlyMode)
-                ProcessBuilder("sh", fileOutput.absolutePath)
-                    .directory(workingDir)
-                    .redirectErrorStream(true)
-                    .start()
-            else
-                null
-
-            /* If we are in read only mode, use our bytes as the input */
-            val bufferedReader = if (!readOnlyMode)
-                process!!.inputStream.bufferedReader()
-            else
-                BufferedInputStream(bytes.inputStream()).bufferedReader()
-
-            /* Buffer output to outputView as long as we want to keep running */
-            while (currentlyExecuting.get()) {
-                /* Try to fetch the next line, or break if we are already finished */
-                val line = bufferedReader.readLine() ?: break
-
-                /* Add line to our buffer */
-                outputBuffer.add(line)
-
-                /* Before we enter the main thread, calculate our buffer size */
-                val bufferSizeString = sharedPrefs.getString("bufferSize", "100")
-                var bufferSize = 100
-                if (!bufferSizeString.isNullOrBlank())
-                    try {
-                        bufferSize = Integer.parseInt(bufferSizeString).coerceAtLeast(1)
-                    } catch (_: NumberFormatException) {}
-
-                /* Before we enter the main thread, join our buffer into a string */
-                val trimmedBuffer = outputBuffer.takeLast(bufferSize)
-                val bufferedString = trimmedBuffer.joinToString(System.lineSeparator())
-
-                /* Keep our buffer at a constant size to not use excess memory */
-                outputBuffer = ArrayList(trimmedBuffer)
-
-                /* Pipe output to display */
+        /* Handle output in another thread */
+        Thread {
+            while (execution.executing.get()) {
                 runOnUiThread {
-                    /* Update text using lines from our buffer */
-                    outputView.text = bufferedString
-
-                    /* Scroll to bottom of text */
-                    if (sharedPrefs.getBoolean("autoScroll", true)) scrollView.post {
-                        /* When the text is selectable, it causes scroll jitter */
-                        outputView.setTextIsSelectable(false)
-                        scrollView.fullScroll(ScrollView.FOCUS_DOWN)
-                        outputView.setTextIsSelectable(true)
-                    }
+                    updateOutputView()
                 }
+
+                Thread.sleep(100)
             }
 
-            /* Signal that we are finished */
-            currentlyExecuting.set(false)
-
-            /* Release our wakelock */
-            if (wakelock.isHeld)
-                wakelock.release()
-
-            /* Ensure we kill the process */
-            process?.destroy()
+            /* Final update after thread ends */
+            runOnUiThread {
+                updateOutputView()
+            }
         }.start()
     }
 
@@ -284,12 +233,11 @@ class MainActivity : AppCompatActivity() {
 
             /* Kill the currently running process */
             R.id.kill -> {
-                currentlyExecuting.set(false)
+                execution.executing.set(false)
             }
 
             /* Clear terminal output */
             R.id.clear -> {
-                outputBuffer.clear()
                 outputView.text = ""
             }
 
@@ -381,7 +329,6 @@ class MainActivity : AppCompatActivity() {
         /* Lateinit setup */
         sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this)
         editor = sharedPrefs.edit()
-        powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
         scrollView = findViewById(R.id.scrollView)
         outputView = findViewById(R.id.output)
 
@@ -417,6 +364,9 @@ class MainActivity : AppCompatActivity() {
 
         /* Configure our terminal using user configuration */
         updateOutputViewConfig()
+
+        /* Create our execution environment */
+        execution = Execution(getSystemService(Context.POWER_SERVICE) as PowerManager)
 
         /* Register our Nfc helper class */
         nfc = Nfc()
