@@ -101,9 +101,11 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(chooserIntent, requestCode)
     }
 
+    /* Push the latest execution output to the display */
     private fun updateOutputView() {
         outputView.text = execution.outputBuffer.joinToString(System.lineSeparator())
 
+        /* Disable selection to prevent jitter while scrolling */
         if (sharedPrefs.getBoolean("autoScroll", true)) scrollView.post {
             outputView.setTextIsSelectable(false)
             scrollView.fullScroll(ScrollView.FOCUS_DOWN)
@@ -113,14 +115,17 @@ class MainActivity : AppCompatActivity() {
 
     /* First write out script to internal storage, then execute it */
     private fun executeScriptFromBytes(bytes: ByteArray) {
+        /* Do not allow concurrent modifications */
         if (execution.executing.get())
             return
 
+        /* Display script contents if we need to */
         if (sharedPrefs.getBoolean("viewOnly", false)) {
             outputView.text = String(bytes)
             return
         }
 
+        /* Setup our execution environment */
         val execParams = ExecParams()
         with (execParams) {
             scriptBytes = bytes
@@ -138,7 +143,7 @@ class MainActivity : AppCompatActivity() {
             } catch (_: NumberFormatException) {}
         }
 
-        /* Execute in another thread */
+        /* Execute script in another thread */
         Thread {
             execution.execute(execParams)
         }.start()
@@ -150,6 +155,7 @@ class MainActivity : AppCompatActivity() {
                     updateOutputView()
                 }
 
+                /* Prevent locking up the UI thread */
                 Thread.sleep(100)
             }
 
