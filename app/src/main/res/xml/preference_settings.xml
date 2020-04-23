@@ -22,6 +22,11 @@
             android:summary="The maximum number of seconds to hold the wakelock."
             android:defaultValue="60"
             android:dependency="holdWakelock" />
+        <EditTextPreference
+            android:key="refreshInterval"
+            android:title="Refresh Interval"
+            android:summary="The interval in milliseconds to display new script output. Small values can cause stutter."
+            android:defaultValue="100" />
         <Preference
             android:key="grantStorageAccess"
             android:title="Grant Storage Access"

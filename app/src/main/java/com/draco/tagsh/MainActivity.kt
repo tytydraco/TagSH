@@ -148,6 +148,13 @@ class MainActivity : AppCompatActivity() {
             execution.execute(execParams)
         }.start()
 
+        /* Wait as to not overwhelm UI thread */
+        val intervalString = sharedPrefs.getString("refreshInterval", "100")
+        var interval = 100
+        if (!intervalString.isNullOrBlank()) try {
+            interval = Integer.parseInt(intervalString).coerceAtLeast(1)
+        } catch (_: NumberFormatException) {}
+
         /* Handle output in another thread */
         Thread {
             while (execution.executing.get()) {
@@ -156,7 +163,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 /* Prevent locking up the UI thread */
-                Thread.sleep(100)
+                Thread.sleep(interval.toLong())
             }
 
             /* Final update after thread ends */
