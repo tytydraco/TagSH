@@ -136,7 +136,7 @@ class MainActivity : AppCompatActivity() {
 
             /* Hold a wakelock if we need to */
             val wakelock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, wakelockTag)
-            if (sharedPrefs.getBoolean("holdWakelock", true)) {
+            if (sharedPrefs.getBoolean("holdWakelock", false)) {
                 val timeoutString = sharedPrefs.getString("wakelockTimeout", "60")
                 var timeout = 60
                 if (!timeoutString.isNullOrBlank())
