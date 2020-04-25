@@ -103,7 +103,10 @@ class MainActivity : AppCompatActivity() {
 
     /* Push the latest execution output to the display */
     private fun updateOutputView() {
-        outputView.text = execution.outputBuffer.joinToString(System.lineSeparator())
+        /* Synchronize when we read */
+        synchronized(execution.outputBuffer) {
+            outputView.text = execution.outputBuffer.joinToString(System.lineSeparator())
+        }
 
         /* Disable selection to prevent jitter while scrolling */
         if (sharedPrefs.getBoolean("autoScroll", true)) scrollView.post {
