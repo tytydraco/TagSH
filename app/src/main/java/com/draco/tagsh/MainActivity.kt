@@ -321,12 +321,10 @@ class MainActivity : AppCompatActivity() {
             try {
                 val color = Color.parseColor(backgroundColor)
                 window.decorView.setBackgroundColor(color)
-                supportActionBar!!.setBackgroundDrawable(color.toDrawable())
             } catch (_: IllegalArgumentException) {}
         else {
             val color = getColor(R.color.colorPrimaryDark)
             window.decorView.setBackgroundColor(color)
-            supportActionBar!!.setBackgroundDrawable(color.toDrawable())
         }
 
         if (!foregroundColor.isNullOrBlank())
