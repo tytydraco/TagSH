@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
 
 class WebViewActivity : AppCompatActivity() {
@@ -17,7 +18,7 @@ class WebViewActivity : AppCompatActivity() {
         webView = WebView(this)
         webView.settings.javaScriptEnabled = true
         webView.settings.allowFileAccess = true
-        webView.webViewClient = CustomWebViewClient(this)
+        webView.webViewClient = WebViewClient()
         webView.webChromeClient = WebChromeClient()
 
         /* Get html content passed to this activity */
