@@ -27,7 +27,7 @@ class SettingsPreferenceFragment : PreferenceFragmentCompat() {
                     ActivityCompat.requestPermissions(activity as Activity,
                         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE,
                             Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                        requestCodeStoragePermissions);
+                        requestCodeStoragePermissions)
             }
 
             /* Take user to the Google Play details page */

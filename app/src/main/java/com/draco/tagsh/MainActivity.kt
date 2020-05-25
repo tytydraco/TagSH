@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.PowerManager
@@ -18,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import com.google.zxing.integration.android.IntentIntegrator
 import java.io.File
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     /* Private classes */
@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         /* If this is a valid HTML string, use a web view */
-        if (scriptString.split(System.lineSeparator())[0].toLowerCase() == "<!doctype html>") {
+        if (scriptString.split(System.lineSeparator())[0].toLowerCase(Locale.getDefault()) == "<!doctype html>") {
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra("content", scriptString)
             startActivity(intent)
@@ -148,24 +148,12 @@ class MainActivity : AppCompatActivity() {
             if (!wakelockTimeoutString.isNullOrBlank()) try {
                 wakelockTimeout = Integer.parseInt(wakelockTimeoutString).coerceAtLeast(1)
             } catch (_: NumberFormatException) {}
-
-            val bufferSizeString = sharedPrefs.getString("bufferSize", "100")
-            if (!bufferSizeString.isNullOrBlank()) try {
-                bufferSize = Integer.parseInt(bufferSizeString).coerceAtLeast(1)
-            } catch (_: NumberFormatException) {}
         }
 
         /* Execute script in another thread */
         Thread {
             execution.execute(execParams)
         }.start()
-
-        /* Wait as to not overwhelm UI thread */
-        val intervalString = sharedPrefs.getString("refreshInterval", "100")
-        var interval = 100
-        if (!intervalString.isNullOrBlank()) try {
-            interval = Integer.parseInt(intervalString).coerceAtLeast(1)
-        } catch (_: NumberFormatException) {}
 
         /* Handle output in another thread */
         Thread {
@@ -175,7 +163,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 /* Prevent locking up the UI thread */
-                Thread.sleep(interval.toLong())
+                Thread.sleep(100)
             }
 
             /* Final update after thread ends */
@@ -314,34 +302,15 @@ class MainActivity : AppCompatActivity() {
         /* Use blank strings as default so a user can clear their configuration */
         val wordWrap = sharedPrefs.getBoolean("wordWrap", true)
         val fontSize = sharedPrefs.getString("fontSize", "")
-        val backgroundColor = sharedPrefs.getString("backgroundColor", "")
-        val foregroundColor = sharedPrefs.getString("foregroundColor", "")
 
         outputView.setHorizontallyScrolling(!wordWrap)
 
         if (!fontSize.isNullOrBlank()) {
             val size = fontSize.toFloatOrNull()
             if (size != null)
-                outputView.textSize = size.coerceAtLeast(1f)
+                outputView.textSize = size.coerceIn(1f, 50f)
         } else
             outputView.textSize = 14f
-
-        if (!backgroundColor.isNullOrBlank())
-            try {
-                val color = Color.parseColor(backgroundColor)
-                window.decorView.setBackgroundColor(color)
-            } catch (_: IllegalArgumentException) {}
-        else {
-            val color = getColor(R.color.colorPrimaryDark)
-            window.decorView.setBackgroundColor(color)
-        }
-
-        if (!foregroundColor.isNullOrBlank())
-            try {
-                outputView.setTextColor(Color.parseColor(foregroundColor))
-            } catch (_: IllegalArgumentException) {}
-        else
-            outputView.setTextColor(getColor(R.color.colorText))
     }
 
     /* On activity creation */

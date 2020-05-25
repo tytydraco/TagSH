@@ -5,7 +5,6 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.collections.ArrayList
 
 /* Parameters to use when executing script */
 class ExecParams {
@@ -25,7 +24,7 @@ class ExecParams {
     var wakelockTimeout = 60
 
     /* Number of lines of output to keep track of at one time */
-    var bufferSize = 100
+    var bufferSize = 200
 }
 
 /* Class for clean script execution */

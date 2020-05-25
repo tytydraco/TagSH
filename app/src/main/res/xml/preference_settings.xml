@@ -22,11 +22,6 @@
             android:summary="The maximum number of seconds to hold the wakelock."
             android:defaultValue="60"
             android:dependency="holdWakelock" />
-        <EditTextPreference
-            android:key="refreshInterval"
-            android:title="Refresh Interval"
-            android:summary="The interval in milliseconds to display new script output. Small values can cause stutter."
-            android:defaultValue="100" />
         <Preference
             android:key="grantStorageAccess"
             android:title="Grant Storage Access"
@@ -49,25 +44,10 @@
             android:summary="Set the text that displays when you launch the application."
             android:defaultValue="Scan an NFC tag to execute it." />
         <EditTextPreference
-            android:key="bufferSize"
-            android:title="Buffer Size"
-            android:summary="Number of terminal lines to display at a time. Large values can cause stutter."
-            android:defaultValue="100" />
-        <EditTextPreference
             android:key="fontSize"
             android:title="Font Size"
             android:summary="Change the font size of the terminal text."
             android:defaultValue="14" />
-        <EditTextPreference
-            android:key="backgroundColor"
-            android:title="Background Color"
-            android:summary="Change the color of the terminal background."
-            android:defaultValue="#000000" />
-        <EditTextPreference
-            android:key="foregroundColor"
-            android:title="Foreground Color"
-            android:summary="Change the color of the terminal text."
-            android:defaultValue="#ffffff" />
     </PreferenceCategory>
     <PreferenceCategory android:title="About">
         <Preference
