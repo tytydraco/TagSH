@@ -25,7 +25,7 @@ class WebViewActivity : AppCompatActivity() {
 
         /* Get html content passed to this activity */
         val htmlContent = intent.getStringExtra("content")
-        webView.loadData(htmlContent, null, null)
+        webView.loadDataWithBaseURL(null, htmlContent, "text/html", null, null)
 
         /* Show web view */
         setContentView(webView)
