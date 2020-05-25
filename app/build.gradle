@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
+
 apply plugin: 'kotlin-android'
+
 apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 29
-
-
     defaultConfig {
         applicationId "com.draco.tagsh"
         minSdkVersion 24
@@ -13,7 +13,6 @@ android {
         versionCode 19
         versionName "2.4.1"
     }
-
     buildTypes {
         release {
             minifyEnabled true
@@ -21,19 +20,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
-// To inline the bytecode built with JVM target 1.8 into
-// bytecode that is being built with JVM target 1.6. (e.g. navArgs)
-
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
 }
 
 dependencies {
