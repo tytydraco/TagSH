@@ -15,7 +15,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.drawable.toDrawable
 import androidx.preference.PreferenceManager
 import com.google.zxing.integration.android.IntentIntegrator
 import java.io.File
@@ -122,9 +121,19 @@ class MainActivity : AppCompatActivity() {
         if (execution.executing.get())
             return
 
+        val scriptString = String(bytes)
+
         /* Display script contents if we need to */
         if (sharedPrefs.getBoolean("viewOnly", false)) {
-            outputView.text = String(bytes)
+            outputView.text = scriptString
+            return
+        }
+
+        /* If this is a valid HTML string, use a web view */
+        if (scriptString.split(System.lineSeparator())[0].toLowerCase() == "<!doctype html>") {
+            val intent = Intent(this, WebViewActivity::class.java)
+            intent.putExtra("content", scriptString)
+            startActivity(intent)
             return
         }
 
