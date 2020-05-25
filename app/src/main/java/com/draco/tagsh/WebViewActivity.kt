@@ -18,6 +18,8 @@ class WebViewActivity : AppCompatActivity() {
         webView = WebView(this)
         webView.settings.javaScriptEnabled = true
         webView.settings.allowFileAccess = true
+        webView.settings.useWideViewPort = true
+        webView.settings.loadWithOverviewMode = true
         webView.webViewClient = WebViewClient()
         webView.webChromeClient = WebChromeClient()
 
