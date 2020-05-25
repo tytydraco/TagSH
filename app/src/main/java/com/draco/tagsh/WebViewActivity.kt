@@ -20,7 +20,7 @@ class WebViewActivity : AppCompatActivity() {
         webView.settings.allowFileAccess = true
         webView.settings.useWideViewPort = true
         webView.settings.loadWithOverviewMode = true
-        webView.webViewClient = WebViewClient()
+        webView.webViewClient = CustomWebViewClient(this)
         webView.webChromeClient = WebChromeClient()
 
         /* Get html content passed to this activity */
