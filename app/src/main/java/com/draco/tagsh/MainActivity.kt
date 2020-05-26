@@ -130,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         /* If this is a valid HTML string, use a web view */
-        if (scriptString.split(System.lineSeparator())[0].toLowerCase(Locale.getDefault()) == "<!doctype html>") {
+        if (scriptString.startsWith("<!doctype html>", true)) {
             val intent = Intent(this, WebViewActivity::class.java)
             intent.putExtra("content", scriptString)
             startActivity(intent)
