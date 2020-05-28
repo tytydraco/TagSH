@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents">
+    <style name="AppTheme" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -10,12 +10,6 @@
         <item name="actionBarStyle">@style/ActionBarTheme</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
-        <item name="actionOverflowButtonStyle">@style/AppTheme.Overflow</item>
-    </style>
-
-    <!-- Overflow button color -->
-    <style name="AppTheme.Overflow" parent="Widget.AppCompat.ActionButton.Overflow">
-        <item name="android:tint">@color/colorAccent</item>
     </style>
 
     <!-- Fullscreen extension of base theme -->
