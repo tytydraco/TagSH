@@ -17,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import com.google.zxing.integration.android.IntentIntegrator
 import java.io.File
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
     /* Private classes */
