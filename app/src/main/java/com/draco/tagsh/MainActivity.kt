@@ -386,6 +386,11 @@ class MainActivity : AppCompatActivity() {
     /* Inflate custom menu to toolbar */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.mainactivity, menu)
+
+        /* Make sure nfc is supported to flash scripts */
+        if (nfc.supportState() == Nfc.State.UNSUPPORTED)
+            menu!!.findItem(R.id.flash).isVisible = false
+
         return super.onCreateOptionsMenu(menu)
     }
 
