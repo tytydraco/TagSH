@@ -8,39 +8,29 @@ import android.nfc.*
 import android.nfc.tech.Ndef
 import java.io.IOException
 
-class Nfc {
-    /* Device Nfc State */
+class Nfc(context: Context) {
     enum class State {
-        /* Device lacks Nfc support on a hardware level */
-        UNSUPPORTED,
-        /* The device supports Nfc, but it is currently off */
-        SUPPORTED_OFF,
-        /* The device supports Nfc, and it is currently on */
-        SUPPORTED_ON
+        UNSUPPORTED, /* Device lacks Nfc support on a hardware level */
+        SUPPORTED_OFF, /* The device supports Nfc, but it is currently off */
+        SUPPORTED_ON /* The device supports Nfc, and it is currently on */
     }
 
-    /* Check if Nfc supported */
-    private var nfcAdapter: NfcAdapter? = null
+    private var nfcAdapter = NfcAdapter.getDefaultAdapter(context)
 
-    /* Read NDEF while app is running */
-    private var nfcPendingIntent: PendingIntent? = null
+    private var nfcPendingIntent: PendingIntent = PendingIntent.getActivity(
+        context,
+        0,
+        Intent(context, context.javaClass)
+            .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP),
+        0
+    )
 
     /* Mime type for NDEF record. P.S.: Takes up Nfc tag space */
-    private val mimeType: String = "text/tagsh"
+    private val mimeType: String = context.getString(R.string.nfc_mime)
 
     /* Get the byte contents of a Nfc tag */
-    fun readBytes(intent: Intent?): ByteArray? {
-        /* Check if we can even access the tag */
-        val currentTag = intent?.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
-            ?: return null
-
-        /* Connect to the tag and return exception if we fail */
-        val ndef = Ndef.get(currentTag) ?: return null
-
-        /* If the tag is read only, fail */
-        if (!ndef.isWritable)
-            return null
-
+    fun readBytes(intent: Intent): ByteArray {
         /* Parse any messages */
         val parcelables = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES)
 
@@ -57,14 +47,11 @@ class Nfc {
     }
 
     /* Try to write a ByteArray to a tag. Return true if succeeded */
-    fun writeBytes(intent: Intent?, bytes: ByteArray): Exception? {
+    fun writeBytes(intent: Intent, bytes: ByteArray): Exception? {
         var exception: Exception? = null
-        val currentTag = intent?.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
-            ?: return Exception("Tag could not be located.")
+        val currentTag = intent.getParcelableExtra<Tag>(NfcAdapter.EXTRA_TAG)
 
-        /* Connect to the tag and return exception if we fail */
-        val ndef = Ndef.get(currentTag) ?: return IOException("There is no scanned tag.")
-
+        val ndef = Ndef.get(currentTag) ?: return IOException("Tag was removed from device.")
         val newBytes = Compression.safeCompress(bytes)
 
         /* Ensure we account for both our bytes and our mime type string */
@@ -73,26 +60,19 @@ class Nfc {
 
         /* Don't bother writing if read-only */
         if (!ndef.isWritable)
-            return IOException("Tag not writable.")
+            return IOException("Tag is not writable.")
 
         /* Try to write to the tag; if fail, return false */
         try {
             ndef.connect()
-
-            /* Write the message */
-            val record = createByteRecord(newBytes)
+            val record = NdefRecord.createMime(mimeType, newBytes)
             ndef.writeNdefMessage(NdefMessage(record))
-
-            /* Close */
             ndef.close()
         } catch (_: FormatException) {
-            /* Malformed NDEF */
-            exception = FormatException("There was an internal error.")
+            exception = FormatException("Content is malformed.")
         } catch (_: IOException) {
-            /* Cancelled or unexpected data */
-            exception = IOException("Tag was removed from device.")
+            exception = IOException("Tag is not writable.")
         } catch (_: TagLostException) {
-            /* Tag removed too quickly */
             exception = TagLostException("Tag was removed from device.")
         }
 
@@ -100,38 +80,13 @@ class Nfc {
     }
 
     /* Check if the passed intent was caused by a tag */
-    fun startedByNDEF(intent: Intent?): Boolean {
-        val action = intent?.action
-
-        /* Any of these actions are valid for an Nfc tag scan */
-        return (NfcAdapter.ACTION_NDEF_DISCOVERED == action ||
-                NfcAdapter.ACTION_TAG_DISCOVERED == action)
-    }
-
-    /* Create binary record */
-    private fun createByteRecord(bytes: ByteArray): NdefRecord {
-        /* Use binary, without language code */
-        return NdefRecord.createMime(mimeType, bytes)
-    }
-
-    /* Setup for scanning Nfc tags while in foreground */
-    fun setupForegroundIntent(context: Context) {
-        nfcPendingIntent = PendingIntent.getActivity(
-            context,
-            0,
-            Intent(context, context.javaClass)
-                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
-            0
-        )
+    fun startedByNDEF(intent: Intent): Boolean {
+        return (intent.action == NfcAdapter.ACTION_NDEF_DISCOVERED ||
+                intent.action == NfcAdapter.ACTION_TAG_DISCOVERED)
     }
 
     /* Enable foreground scanning (call from onResume) */
     fun enableForegroundIntent(activity: Activity) {
-        /* Nfc must be on */
-        if (supportState() != State.SUPPORTED_ON)
-            return
-
-        /* Allow scanning while app is open */
         nfcAdapter?.enableForegroundDispatch(
             activity,
             nfcPendingIntent,
@@ -142,17 +97,7 @@ class Nfc {
 
     /* Disable foreground scanning (call from onPause) */
     fun disableForegroundIntent(activity: Activity) {
-        /* Nfc must be on */
-        if (supportState() != State.SUPPORTED_ON)
-            return
-
-        /* Disable scanning while app is closed */
         nfcAdapter?.disableForegroundDispatch(activity)
-    }
-
-    /* Try to register the Nfc adapter */
-    fun registerAdapter(context: Context) {
-        nfcAdapter = NfcAdapter.getDefaultAdapter(context)
     }
 
     /* Check if Nfc is supported on the current device */
@@ -162,7 +107,7 @@ class Nfc {
             return State.UNSUPPORTED
 
         /* Device has Nfc disabled */
-        if (!nfcAdapter?.isEnabled!!)
+        if (!nfcAdapter.isEnabled)
             return State.SUPPORTED_OFF
 
         /* Device has Nfc enabled */

@@ -36,7 +36,7 @@
                 <action android:name="android.nfc.action.NDEF_DISCOVERED" />
                 <action android:name="android.nfc.action.TAG_DISCOVERED" />
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="text/tagsh" />
+                <data android:mimeType="@string/nfc_mime" />
             </intent-filter>
         </activity>
         <activity

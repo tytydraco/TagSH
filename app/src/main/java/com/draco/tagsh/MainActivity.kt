@@ -360,13 +360,7 @@ class MainActivity : AppCompatActivity() {
         execution = Execution(getSystemService(Context.POWER_SERVICE) as PowerManager)
 
         /* Register our Nfc helper class */
-        nfc = Nfc()
-
-        /* Register Nfc adapter */
-        nfc.registerAdapter(this)
-
-        /* Allow Nfc tags to be scanned while the app is opened */
-        nfc.setupForegroundIntent(this)
+        nfc = Nfc(this)
 
         /* Ask user to accept the privacy policy on first launch */
         if (sharedPrefs.getBoolean("firstLaunch", true)) {
