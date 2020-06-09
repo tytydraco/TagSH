@@ -43,11 +43,6 @@
             android:name=".SettingsActivity"
             android:label="@string/settings"
             android:configChanges="orientation|screenSize" />
-        <activity
-            android:name=".WebViewActivity"
-            android:theme="@style/AppTheme.WebViewActivity"
-            android:label="@string/webview"
-            android:configChanges="orientation|screenSize" />
     </application>
 
 </manifest>

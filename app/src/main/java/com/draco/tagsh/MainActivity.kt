@@ -128,14 +128,6 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        /* If this is a valid HTML string, use a web view */
-        if (scriptString.startsWith("<!doctype html>", true)) {
-            val intent = Intent(this, WebViewActivity::class.java)
-            intent.putExtra("content", scriptString)
-            startActivity(intent)
-            return
-        }
-
         /* Setup our execution environment */
         val execParams = ExecParams()
         with (execParams) {
